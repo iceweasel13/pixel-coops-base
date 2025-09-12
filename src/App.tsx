@@ -1,31 +1,42 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './PhaserGame';
-import { MainMenu } from './game/scenes/MainMenu';
+import { EventBus } from './game/EventBus';
+import { ShopDialog } from './components/ShopDialog';
+import { CoopDialog } from './components/CoopDialog';
+import { CollectDialog } from './components/CollectDialog';
 
 function App()
 {
-    // The sprite can only be moved in the MainMenu Scene
-    const [canMoveSprite, setCanMoveSprite] = useState(true);
-
-    //  References to the PhaserGame component (game and scene are exposed)
     const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
+    const [dialogType, setDialogType] = useState<string | null>(null);
 
-    
+    useEffect(() => {
+        // Phaser'dan gelen 'open-dialog' olayını dinle
+        const handleOpenDialog = (objectName: string) => {
+            console.log('React olayı alıyor:', objectName); // Bunu ekle
+            setDialogType(objectName);
+        };
 
-    // Event emitted from the PhaserGame component
-    const currentScene = (scene: Phaser.Scene) => {
+        EventBus.on('open-dialog', handleOpenDialog);
 
-        setCanMoveSprite(scene.scene.key !== 'MainMenu');
-        
-    }
+        return () => {
+            EventBus.removeListener('open-dialog', handleOpenDialog);
+        };
+    }, []);
+
+    const closeDialog = () => {
+        setDialogType(null);
+    };
 
     return (
         <div id="app">
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-           
+            <PhaserGame ref={phaserRef} />
+            
+            {dialogType === 'shop' && <ShopDialog isOpen={true} onClose={closeDialog} />}
+            {dialogType === 'coop' && <CoopDialog isOpen={true} onClose={closeDialog} />}
+            {dialogType === 'collect' && <CollectDialog isOpen={true} onClose={closeDialog} />}
         </div>
-    )
+    );
 }
 
 export default App
