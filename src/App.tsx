@@ -11,16 +11,20 @@ function App()
     const [dialogType, setDialogType] = useState<string | null>(null);
 
     useEffect(() => {
-        // Phaser'dan gelen 'open-dialog' olayını dinle
+        // Phaser'dan gelen diyalog olaylarını dinle
         const handleOpenDialog = (objectName: string) => {
-            console.log('React olayı alıyor:', objectName); // Bunu ekle
             setDialogType(objectName);
+        };
+        const handleCloseDialog = () => {
+            setDialogType(null);
         };
 
         EventBus.on('open-dialog', handleOpenDialog);
+        EventBus.on('close-dialog', handleCloseDialog);
 
         return () => {
             EventBus.removeListener('open-dialog', handleOpenDialog);
+            EventBus.removeListener('close-dialog', handleCloseDialog);
         };
     }, []);
 
