@@ -8,7 +8,6 @@ import { Preloader } from './scenes/Preloader';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    // Ekranı boşluksuz doldurmak için Scale.RESIZE modunu kullanıyoruz
     scale: {
         mode: Scale.RESIZE,
         autoCenter: Scale.CENTER_BOTH
@@ -24,11 +23,14 @@ const config: Phaser.Types.Core.GameConfig = {
         MainGame,
         GameOver
     ],
+      render: {
+        pixelArt: true
+    },
     // Fiziği etkinleştiriyoruz
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true // Geliştirme için çarpışma alanlarını görünür yapar
+            debug: false // Çarpışma alanlarını görünmez yapar
         }
     }
 };
