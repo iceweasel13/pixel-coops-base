@@ -15,9 +15,11 @@ body {
     height: 100vh;
     overflow: hidden;
     display: flex;
+    position: relative;
     justify-content: center;
     align-items: center;
 }
+
 
 #game-container {
     width: 100%;

@@ -1,3 +1,5 @@
+// Konum: src/game/scenes/Preloader.ts
+
 import { Scene } from 'phaser';
 
 export class Preloader extends Scene
@@ -10,10 +12,8 @@ export class Preloader extends Scene
     init ()
     {
         this.add.image(512, 384, 'background');
-
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
         const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
-
         this.load.on('progress', (progress: number) => {
             bar.width = 4 + (460 * progress);
         });
@@ -22,14 +22,16 @@ export class Preloader extends Scene
     preload ()
     {
         this.load.setPath('assets');
+        
+        // Önceki karakteri kaldırıp yenisini ekliyoruz
+        // ÖNEMLİ: Eski player_sheet satırını sildiğinden emin ol.
+        this.load.spritesheet('player_sheet', 'character.png', {
+            frameWidth: 64,
+            frameHeight: 64
+        });
 
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
-
-        // Harita JSON dosyasını yükle
+        // Harita ve diğer görseller
         this.load.tilemapTiledJSON('game_map', 'map.json');
-
-        // Tileset görsellerini yükle.
         this.load.image('Autotile_Grass_and_Dirt_Path_Tileset', 'Autotile_Grass_and_Dirt_Path_Tileset.png');
         this.load.image('Barn_Tileset', 'Barn_Tileset.png');
         this.load.image('Exterior_Tileset', 'Exterior_Tileset.png');

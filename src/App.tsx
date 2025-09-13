@@ -4,6 +4,7 @@ import { EventBus } from './game/EventBus';
 import { ShopDialog } from './components/ShopDialog';
 import { CoopDialog } from './components/CoopDialog';
 import { CollectDialog } from './components/CollectDialog';
+import { GameUI } from './components/GameUI';
 
 function App()
 {
@@ -34,8 +35,9 @@ function App()
 
     return (
         <div id="app">
+         
             <PhaserGame ref={phaserRef} />
-            
+               <GameUI/>
             {dialogType === 'shop' && <ShopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'coop' && <CoopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'collect' && <CollectDialog isOpen={true} onClose={closeDialog} />}

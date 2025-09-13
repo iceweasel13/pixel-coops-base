@@ -24,7 +24,8 @@ const config: Phaser.Types.Core.GameConfig = {
         GameOver
     ],
       render: {
-        pixelArt: true
+        pixelArt: true,
+        roundPixels: true
     },
     // Fiziği etkinleştiriyoruz
     physics: {
