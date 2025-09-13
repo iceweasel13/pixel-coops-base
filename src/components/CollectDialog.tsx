@@ -1,16 +1,18 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
+import { DialogPanel } from "./DialogPanel";
 
-export function CollectDialog({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Toplama Alanı</DialogTitle>
-          <DialogDescription>
-            Burada yumurtaları toplayıp tokena çevirebilirsin.
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+    <DialogPanel
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      title="Toplama Alanı"
+    >
+      <p className="text-sm text-black/80">
+        Burada yumurtaları toplayıp tokena çevirebilirsin.
+      </p>
+    </DialogPanel>
   );
 }
+

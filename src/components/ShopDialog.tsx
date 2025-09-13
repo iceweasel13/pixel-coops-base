@@ -17,7 +17,6 @@ const chickensForSale: Chicken[] = [
 ];
 
 export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
      
