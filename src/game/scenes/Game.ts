@@ -1,17 +1,16 @@
 import { EventBus } from '../EventBus';
-import { Scene } from 'phaser';
+import { Scene, Math as PhaserMath } from 'phaser';
 
 /**
  * Ana oyun sahnesi.
  * Oyuncunun haritada hareket ettiği, etkileşimde bulunduğu ve oyunun temel mantığının işlediği yerdir.
+ * Klavye ve mobil dokunmatik kontrolleri destekler.
  */
 export class Game extends Scene {
     // Sahne Özellikleri
     camera: Phaser.Cameras.Scene2D.Camera;
     map: Phaser.Tilemaps.Tilemap;
     player: Phaser.Physics.Arcade.Sprite;
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    wasd: { up: Phaser.Input.Keyboard.Key, down: Phaser.Input.Keyboard.Key, left: Phaser.Input.Keyboard.Key, right: Phaser.Input.Keyboard.Key };
 
     // Harita Katmanları
     groundLayer: Phaser.Tilemaps.TilemapLayer;
@@ -19,7 +18,13 @@ export class Game extends Scene {
     buildingsLayer: Phaser.Tilemaps.TilemapLayer;
     fencesLayer: Phaser.Tilemaps.TilemapLayer;
 
-    // Özel Etkileşim Alanları
+    // Kontrol Mekanizmaları
+    cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    wasd: { up: Phaser.Input.Keyboard.Key, down: Phaser.Input.Keyboard.Key, left: Phaser.Input.Keyboard.Key, right: Phaser.Input.Keyboard.Key };
+    private isTouching: boolean = false;
+    private touchPosition: PhaserMath.Vector2 = new PhaserMath.Vector2();
+    
+    // Durum (State) Yönetimi
     private triggers: { name: 'shop' | 'coop' | 'collect'; rect: Phaser.Geom.Rectangle; inside: boolean }[] = [];
     private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
@@ -28,7 +33,27 @@ export class Game extends Scene {
     }
 
     create() {
-        // --- Harita ve Katmanların Kurulumu ---
+        this.setupMapAndLayers();
+        this.setupPlayer();
+        this.createPlayerAnimations();
+        this.setupCollisionsAndTriggers();
+        this.setupCamera();
+        this.setupInputControls(); // Klavye ve dokunmatik kontrolleri birleştirdik
+
+        EventBus.emit('current-scene-ready', this);
+    }
+
+    update() {
+        if (!this.player || !this.player.body) return;
+
+        this.handleMovement();
+        this.checkInteractionTriggers();
+    }
+
+    /**
+     * Tiled editöründe oluşturulan haritayı ve katmanlarını sahneye yükler.
+     */
+    private setupMapAndLayers() {
         this.map = this.make.tilemap({ key: 'game_map' });
         const allTilesets = [
             this.map.addTilesetImage('Autotile_Grass_and_Dirt_Path_Tileset', 'Autotile_Grass_and_Dirt_Path_Tileset'),
@@ -45,48 +70,23 @@ export class Game extends Scene {
         this.decorationsLayer = this.map.createLayer('decorations', allTilesets)!;
         this.fencesLayer = this.map.createLayer('fences', allTilesets)!;
         this.buildingsLayer = this.map.createLayer('buildings', allTilesets)!;
+    }
 
-        // --- Oyuncu Kurulumu ---
+    /**
+     * Oyuncuyu oluşturur, fiziksel özelliklerini ve başlangıç pozisyonunu ayarlar.
+     */
+    private setupPlayer() {
         const startX = this.map.widthInPixels / 2;
         const startY = this.map.heightInPixels / 2;
         this.player = this.physics.add.sprite(startX, startY, 'player_sheet', 4);
 
         if (this.player.body) {
-            // Spritesheet 64x64 yüklense bile, fiziksel çarpışma kutusunu (hitbox)
-            // karakterin gerçek boyutlarına (16x16) indirgiyoruz.
-            this.player.body.setSize(16, 16);
-            
-            // Küçültülmüş hitbox'ı, 64x64'lük karenin merkezine yerleştiriyoruz.
-            // Ofset = (Sprite Boyutu - Hitbox Boyutu) / 2  =>  (64 - 16) / 2 = 24
-            this.player.body.setOffset(24, 24);
+            this.player.body.setSize(16, 16).setOffset(24, 24);
         }
-
-        // --- Animasyonların Tanımlanması ---
-        this.createPlayerAnimations();
-
-        // --- Fizik ve Etkileşim Alanları ---
-        this.setupCollisionsAndTriggers();
-        
-        // --- Kamera Kurulumu ---
-        this.setupCamera();
-
-        // --- Kontrol Mekanizması ---
-        this.setupInput();
-
-        // Sahnenin hazır olduğunu React UI'a bildiriyoruz.
-        EventBus.emit('current-scene-ready', this);
-    }
-
-    update() {
-        // Player body'si henüz oluşmadıysa update fonksiyonunu çalıştırma.
-        if (!this.player || !this.player.body) return;
-
-        this.handlePlayerMovement();
-        this.checkInteractionTriggers();
     }
 
     /**
-     * Oyuncu animasyonlarını oluşturur ve `anims` yöneticisine kaydeder.
+     * Oyuncu animasyonlarını oluşturur.
      */
     private createPlayerAnimations() {
         this.anims.create({ key: 'walk-right', frames: this.anims.generateFrameNumbers('player_sheet', { frames: [0, 1] }), frameRate: 8, repeat: -1 });
@@ -96,7 +96,7 @@ export class Game extends Scene {
     }
 
     /**
-     * Haritadaki 'collisions' katmanından duvarları ve etkileşim alanlarını (triggers) ayarlar.
+     * Haritadaki duvarları ve etkileşim alanlarını (triggers) ayarlar.
      */
     private setupCollisionsAndTriggers() {
         const collisionLayer = this.map.getObjectLayer('collisions');
@@ -111,30 +111,28 @@ export class Game extends Scene {
                     const wall = this.add.rectangle(x, y, width, height).setOrigin(0);
                     collisionObjects.add(wall);
                 } else if (['shop', 'coop', 'collect'].includes(objectName)) {
-                    this.triggers.push({ 
-                        name: objectName as any, 
-                        rect: new Phaser.Geom.Rectangle(x, y, width, height), 
-                        inside: false 
-                    });
+                    this.triggers.push({ name: objectName as any, rect: new Phaser.Geom.Rectangle(x, y, width, height), inside: false });
                 }
             });
         }
         this.physics.add.collider(this.player, collisionObjects);
     }
-
+    
     /**
-     * Kamera ayarlarını yapılandırır: Sınırlar, oyuncu takibi ve başlangıç zoom seviyesi.
+     * Kamera ayarlarını yapılandırır.
      */
     private setupCamera() {
-        this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
-        this.cameras.main.setZoom(3);
+        this.camera = this.cameras.main;
+        this.camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        this.camera.startFollow(this.player, true, 0.1, 0.1);
+        this.camera.setZoom(3);
     }
 
     /**
-     * Klavye (WASD ve Yön Tuşları) girdilerini dinlemek için ayarları yapar.
+     * Klavye ve dokunmatik (mobil) kontrol mekanizmalarını ayarlar.
      */
-    private setupInput() {
+    private setupInputControls() {
+        // Klavye Kontrolleri
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.wasd = {
             up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -142,41 +140,90 @@ export class Game extends Scene {
             left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
             right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D)
         };
+
+        // Mobil Dokunmatik Kontroller
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.isTouching = true;
+            this.touchPosition.set(pointer.worldX, pointer.worldY);
+        });
+        this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            if (pointer.isDown) {
+                this.touchPosition.set(pointer.worldX, pointer.worldY);
+            }
+        });
+        this.input.on('pointerup', () => {
+            this.isTouching = false;
+        });
     }
 
     /**
-     * Her frame'de oyuncu hareketini ve animasyonlarını kontrol eder.
+     * Oyuncu hareketini aktif kontrole (dokunmatik veya klavye) göre yönetir.
      */
-    private handlePlayerMovement() {
+    private handleMovement() {
         const speed = 60;
         const body = this.player.body as Phaser.Physics.Arcade.Body;
-        body.setVelocity(0);
+        
+        // Dokunmatik kontrol aktifse, onu öncelikli kullan
+        if (this.isTouching) {
+            const direction = this.touchPosition.clone().subtract(new PhaserMath.Vector2(this.player.x, this.player.y));
+            
+            // Titremeyi önlemek için sadece belirli bir mesafeden sonra hareket et
+            if (direction.length() > 16) {
+                direction.normalize();
+                body.setVelocity(direction.x * speed, direction.y * speed);
+                this.updateAnimationFromVelocity(direction);
+            } else {
+                body.setVelocity(0);
+            }
+        } 
+        // Dokunmatik aktif değilse, klavyeyi dinle
+        else {
+            let dx = 0;
+            let dy = 0;
+            if (this.cursors.left.isDown || this.wasd.left.isDown) dx = -1;
+            else if (this.cursors.right.isDown || this.wasd.right.isDown) dx = 1;
+            if (this.cursors.up.isDown || this.wasd.up.isDown) dy = -1;
+            else if (this.cursors.down.isDown || this.wasd.down.isDown) dy = 1;
 
-        if (this.cursors.left.isDown || this.wasd.left.isDown) {
-            body.setVelocityX(-speed); this.player.anims.play('walk-left', true); this.lastDirection = 'left';
-        } else if (this.cursors.right.isDown || this.wasd.right.isDown) {
-            body.setVelocityX(speed); this.player.anims.play('walk-right', true); this.lastDirection = 'right';
+            const direction = new PhaserMath.Vector2(dx, dy).normalize();
+            body.setVelocity(direction.x * speed, direction.y * speed);
+            if (dx !== 0 || dy !== 0) {
+                this.updateAnimationFromVelocity(direction);
+            }
         }
-
-        if (this.cursors.up.isDown || this.wasd.up.isDown) {
-            body.setVelocityY(-speed); this.player.anims.play('walk-up', true); this.lastDirection = 'up';
-        } else if (this.cursors.down.isDown || this.wasd.down.isDown) {
-            body.setVelocityY(speed); this.player.anims.play('walk-down', true); this.lastDirection = 'down';
-        }
-
+        
+        // Hiçbir hareket yoksa, durma animasyonunu göster
         if (body.velocity.x === 0 && body.velocity.y === 0) {
             this.player.anims.stop();
-            // Durma anında, son gidilen yöne ait sabit kareyi göster.
             const frameMap = { 'right': 0, 'left': 2, 'down': 4, 'up': 6 };
             this.player.setFrame(frameMap[this.lastDirection]);
-        } else {
-            // Çapraz harekette hızın artmasını engellemek için hızı normalleştir.
-            body.velocity.normalize().scale(speed);
         }
     }
 
     /**
-     * Oyuncunun etkileşim alanlarına girip çıkmadığını kontrol eder ve EventBus üzerinden bildirim gönderir.
+     * Verilen yön vektörüne göre doğru yürüme animasyonunu oynatır.
+     * @param direction Normalleştirilmiş yön vektörü
+     */
+    private updateAnimationFromVelocity(direction: PhaserMath.Vector2) {
+        const angle = PhaserMath.RadToDeg(direction.angle());
+
+        if (angle > -45 && angle <= 45) { // Sağ
+            this.player.anims.play('walk-right', true);
+            this.lastDirection = 'right';
+        } else if (angle > 45 && angle <= 135) { // Aşağı
+            this.player.anims.play('walk-down', true);
+            this.lastDirection = 'down';
+        } else if (angle > 135 || angle <= -135) { // Sol
+            this.player.anims.play('walk-left', true);
+            this.lastDirection = 'left';
+        } else { // Yukarı (-135 ile -45 arası)
+            this.player.anims.play('walk-up', true);
+            this.lastDirection = 'up';
+        }
+    }
+
+    /**
+     * Oyuncunun etkileşim alanlarına girip çıkmadığını kontrol eder.
      */
     private checkInteractionTriggers() {
         if (this.triggers.length > 0) {
