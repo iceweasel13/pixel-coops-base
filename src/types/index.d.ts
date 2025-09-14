@@ -26,4 +26,15 @@ export type FarmPlot = {
     name: string;
     imageUrl: string;
   }
+};export type OwnedChicken = {
+  id: number;
+  name: string;
+  imageUrl: string;
+  productionRate: number;
+};
+
+export type CoopSlot = {
+  id: number;
+  status: 'occupied' | 'empty' | 'locked';
+  chicken?: OwnedChicken; // Sadece 'occupied' durumunda olacak
 };

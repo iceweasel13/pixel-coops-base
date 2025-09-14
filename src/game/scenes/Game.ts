@@ -25,7 +25,7 @@ export class Game extends Scene {
     private touchPosition: PhaserMath.Vector2 = new PhaserMath.Vector2();
     
     // Durum (State) Yönetimi
-    private triggers: { name: 'shop' | 'coop' | 'collect'; rect: Phaser.Geom.Rectangle; inside: boolean }[] = [];
+    private triggers: { name: 'shop' | 'coop' | 'collect' | 'announcements'; rect: Phaser.Geom.Rectangle; inside: boolean }[] = [];
     private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
     constructor() {
@@ -110,7 +110,7 @@ export class Game extends Scene {
                 if (objectName === 'wall') {
                     const wall = this.add.rectangle(x, y, width, height).setOrigin(0);
                     collisionObjects.add(wall);
-                } else if (['shop', 'coop', 'collect'].includes(objectName)) {
+                } else if (['shop', 'coop', 'collect','announcements'].includes(objectName)) {
                     this.triggers.push({ name: objectName as any, rect: new Phaser.Geom.Rectangle(x, y, width, height), inside: false });
                 }
             });

@@ -27,7 +27,7 @@ export class Preloader extends Scene
         // ÖNEMLİ: Eski player_sheet satırını sildiğinden emin ol.
         this.load.spritesheet('player_sheet', 'character.png', {
             frameWidth: 64,
-            frameHeight: 64
+            frameHeight: 64 
         });
 
         // Harita ve diğer görseller

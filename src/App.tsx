@@ -5,6 +5,8 @@ import { ShopDialog } from './components/ShopDialog';
 import { CoopDialog } from './components/CoopDialog';
 import { CollectDialog } from './components/CollectDialog';
 import { GameUI } from './components/GameUI';
+import { AnnouncementDialog } from './components/AnnouncementsDialog';
+import { Toaster } from 'sonner';
 
 function App()
 {
@@ -12,7 +14,7 @@ function App()
     const [dialogType, setDialogType] = useState<string | null>(null);
 
     useEffect(() => {
-        // Phaser'dan gelen diyalog olaylarını dinle
+        
         const handleOpenDialog = (objectName: string) => {
             setDialogType(objectName);
         };
@@ -35,9 +37,10 @@ function App()
 
     return (
         <div id="app">
-         
+           <Toaster />
             <PhaserGame ref={phaserRef} />
                <GameUI/>
+            {dialogType==='announcements' && <AnnouncementDialog isOpen={true} onClose={closeDialog}/>}
             {dialogType === 'shop' && <ShopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'coop' && <CoopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'collect' && <CollectDialog isOpen={true} onClose={closeDialog} />}
