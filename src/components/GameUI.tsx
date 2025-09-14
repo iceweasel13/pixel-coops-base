@@ -1,5 +1,6 @@
 import { Menu, Expand } from 'lucide-react';
 import { Balance, BalanceDisplay } from './BalanceDisplay';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export function GameUI() {
   const toggleFullScreen = () => {
@@ -35,6 +36,7 @@ export function GameUI() {
             >
                 <Expand size={24} />
             </button>
+            <ConnectButton/>
             <button
                 onClick={() => alert('Menüye tıklandı!')}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"

@@ -1,3 +1,7 @@
+// Konum: src/App.tsx
+
+'use client'; // Bu bir istemci bileşenidir.
+
 import { useEffect, useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './PhaserGame';
 import { EventBus } from './game/EventBus';
@@ -5,16 +9,15 @@ import { ShopDialog } from './components/ShopDialog';
 import { CoopDialog } from './components/CoopDialog';
 import { CollectDialog } from './components/CollectDialog';
 import { GameUI } from './components/GameUI';
-import { AnnouncementDialog } from './components/AnnouncementsDialog';
 import { Toaster } from 'sonner';
+import { AnnouncementDialog } from './components/AnnouncementsDialog';
 
-function App()
-{
+// Bu bileşen 'async' olamaz çünkü hook'lar (useState, useEffect) kullanıyor.
+export default function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const [dialogType, setDialogType] = useState<string | null>(null);
 
     useEffect(() => {
-        
         const handleOpenDialog = (objectName: string) => {
             setDialogType(objectName);
         };
@@ -37,15 +40,15 @@ function App()
 
     return (
         <div id="app">
-           <Toaster />
+            <Toaster />
+            <GameUI />
             <PhaserGame ref={phaserRef} />
-               <GameUI/>
-            {dialogType==='announcements' && <AnnouncementDialog isOpen={true} onClose={closeDialog}/>}
+            
             {dialogType === 'shop' && <ShopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'coop' && <CoopDialog isOpen={true} onClose={closeDialog} />}
             {dialogType === 'collect' && <CollectDialog isOpen={true} onClose={closeDialog} />}
+          
+            {dialogType==='announcements' && <AnnouncementDialog isOpen={true} onClose={closeDialog}/>} 
         </div>
     );
 }
-
-export default App
