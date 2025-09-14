@@ -13,7 +13,7 @@ export function GameUI() {
     }
   };
 
-  // Sahte bakiye verileri
+
   const balances: Balance[] = [
     { icon: '/icons/ether.png', amount: 12.5, name: 'Ether' },
     { icon: '/icons/egg.png', amount: 150, name: 'Egg' },

@@ -4,12 +4,13 @@ import Head from "next/head";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { LoginScreen } from "@/components/LoginScreen";
+import { GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@/auth"; // Bu dosya yolunun doğru olduğundan emin ol
 
-// Phaser oyununu SSR olmadan yüklüyoruz
 const AppWithoutSSR = dynamic(() => import("@/App"), { ssr: false });
 
 export default function Home() {
-    // Oyuncunun oyuna girip girmediğini tutan state
     const [isGameStarted, setGameStarted] = useState(false);
 
     return (
@@ -17,7 +18,6 @@ export default function Home() {
             <Head>
                 <title>Phaser Web3 Game</title>
                 <meta name="description" content="A Web3 game built with Phaser and Next.js" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.png" />
             </Head>
             <main>
@@ -29,4 +29,19 @@ export default function Home() {
             </main>
         </>
     );
+}
+
+// Bu fonksiyon sunucuda çalışarak session ve cookie'yi alır.
+// 'output: export' kaldırıldığı için artık sorunsuz çalışacaktır.
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    const session = await getServerSession(context.req, context.res, authConfig);
+    const cookie = context.req.headers.cookie || "";
+
+    return {
+        props: {
+            // Session objesini serialize edilebilir hale getiriyoruz.
+            session: session ? JSON.parse(JSON.stringify(session)) : null,
+            cookie,
+        },
+    };
 }

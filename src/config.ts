@@ -1,19 +1,20 @@
 "use client";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { cookieStorage, createStorage, http } from "wagmi";
-import { monadTestnet, polygon } from "viem/chains";
+import { baseSepolia, monadTestnet, polygon } from "viem/chains";
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
 
 export const config = getDefaultConfig({
-  appName: "RainbowKit demo",
+  appName: 'Pixel Coop',
+  
   projectId: projectId,
-  chains: [monadTestnet],
+  chains: [baseSepolia],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
   transports: {
-    [monadTestnet.id]: http(), // Add transport for monadTestnet
-    [polygon.id]: http(),
+    [baseSepolia.id]: http(), 
+    
   },
 });
