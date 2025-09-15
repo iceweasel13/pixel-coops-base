@@ -42,12 +42,13 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
         <div className="relative h-screen w-screen flex font-sans">
             {/* Arka Plan Resmi Güncellendi */}
             <Image
-                src="/assets/map.png" 
-                alt="Game map background"
-                layout="fill"
-                objectFit="cover"
-                className="z-0 blur-xs" 
-            />
+    src="/assets/map.png"
+    alt="Game map background"
+    fill // 'layout="fill"' yerine 'fill' kullan
+    style={{ objectFit: 'cover' }} // 'objectFit' prop'unu style içine al
+    className="z-0 blur-sm"
+    priority // LCP uyarısı için bu prop'u ekle
+/>
 
             {/* Sol Menü Paneli */}
             <div className="w-1/3 bg-black/80 flex flex-col items-center justify-center z-10 ">

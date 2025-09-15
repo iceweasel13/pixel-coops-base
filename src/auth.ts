@@ -1,4 +1,3 @@
-'use server'
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
 import { SiweMessage } from "siwe";
