@@ -23,7 +23,7 @@ export class Game extends Scene {
     wasd: { up: Phaser.Input.Keyboard.Key, down: Phaser.Input.Keyboard.Key, left: Phaser.Input.Keyboard.Key, right: Phaser.Input.Keyboard.Key };
     private isTouching: boolean = false;
     private touchPosition: PhaserMath.Vector2 = new PhaserMath.Vector2();
-    
+
     // Durum (State) Yönetimi
     private triggers: { name: 'shop' | 'coop' | 'collect' | 'announcements'; rect: Phaser.Geom.Rectangle; inside: boolean }[] = [];
     private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
@@ -110,14 +110,14 @@ export class Game extends Scene {
                 if (objectName === 'wall') {
                     const wall = this.add.rectangle(x, y, width, height).setOrigin(0);
                     collisionObjects.add(wall);
-                } else if (['shop', 'coop', 'collect','announcements'].includes(objectName)) {
+                } else if (['shop', 'coop', 'collect', 'announcements'].includes(objectName)) {
                     this.triggers.push({ name: objectName as any, rect: new Phaser.Geom.Rectangle(x, y, width, height), inside: false });
                 }
             });
         }
         this.physics.add.collider(this.player, collisionObjects);
     }
-    
+
     /**
      * Kamera ayarlarını yapılandırır.
      */
@@ -163,11 +163,11 @@ export class Game extends Scene {
     private handleMovement() {
         const speed = 60;
         const body = this.player.body as Phaser.Physics.Arcade.Body;
-        
+
         // Dokunmatik kontrol aktifse, onu öncelikli kullan
         if (this.isTouching) {
             const direction = this.touchPosition.clone().subtract(new PhaserMath.Vector2(this.player.x, this.player.y));
-            
+
             // Titremeyi önlemek için sadece belirli bir mesafeden sonra hareket et
             if (direction.length() > 16) {
                 direction.normalize();
@@ -176,7 +176,7 @@ export class Game extends Scene {
             } else {
                 body.setVelocity(0);
             }
-        } 
+        }
         // Dokunmatik aktif değilse, klavyeyi dinle
         else {
             let dx = 0;
@@ -192,7 +192,7 @@ export class Game extends Scene {
                 this.updateAnimationFromVelocity(direction);
             }
         }
-        
+
         // Hiçbir hareket yoksa, durma animasyonunu göster
         if (body.velocity.x === 0 && body.velocity.y === 0) {
             this.player.anims.stop();
@@ -234,6 +234,8 @@ export class Game extends Scene {
             this.triggers.forEach(trigger => {
                 const isInside = Phaser.Geom.Intersects.RectangleToRectangle(playerRect, trigger.rect);
                 if (isInside && !trigger.inside) {
+                    this.isTouching = false;
+                    this.touchPosition.set(0, 0);
                     EventBus.emit('open-dialog', trigger.name);
                 } else if (!isInside && trigger.inside) {
                     EventBus.emit('close-dialog', trigger.name);

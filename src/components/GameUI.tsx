@@ -27,29 +27,31 @@ export function GameUI() {
  
 
   return (
-    <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
+    <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none text-xs md:text-base">
         {/* Sol taraf: Bakiye Alanları */}
         <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
             <Balances />
         </div>
 
         {/* Sağ taraf: Butonlar */}
-        <div className="flex flex-row gap-4 pointer-events-auto">
+        <div className="flex flex-row gap-2 pointer-events-auto">
             <button
                 onClick={toggleFullScreen}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center justify-center hover:bg-gray-700 transition-colors"
-                aria-label={isFullscreen ? 'Tam Ekrandan Çık' : 'Tam Ekran'}
-                title={isFullscreen ? 'Tam Ekrandan Çık' : 'Tam Ekran'}
+                aria-label={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
+                title={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
             >
-                {isFullscreen ? <Shrink size={30} /> : <Expand size={30} />}
+                {isFullscreen
+                  ? <Shrink className="w-5 h-5 md:w-[30px] md:h-[30px]" />
+                  : <Expand className="w-5 h-5 md:w-[30px] md:h-[30px]" />}
             </button>
            
             <button
-                onClick={() => alert('Menüye tıklandı!')}
+                onClick={() => alert('Clicked Menu!')}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"
             >
-                <Menu size={30} />
-                <span>Menü</span>
+                <Menu className="w-5 h-5 md:w-[30px] md:h-[30px]" />
+                <span className="leading-none">Menu</span>
             </button>
         </div>
     </div>
