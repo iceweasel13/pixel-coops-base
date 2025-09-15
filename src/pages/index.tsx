@@ -1,5 +1,5 @@
 // src/pages/index.tsx
-
+'use client'
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -9,10 +9,12 @@ import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/session";
 import { getServerSession } from "next-auth/next";
 import { authConfig } from "@/auth";
+import { useSession } from "next-auth/react";
 
 const AppWithoutSSR = dynamic(() => import("@/App"), { ssr: false });
 
 export default function Home() {
+   const session = useSession();
   const [isGameStarted, setGameStarted] = useState(false);
 
   return (

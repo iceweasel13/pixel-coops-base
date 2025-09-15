@@ -12,7 +12,7 @@ import { ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { authenticationAdapter } from "@/utils/authenticationAdapter";
 import ReactQueryProvider from "./ReactQueryProvider";
-import { config } from "../config";
+import { config } from "../../config";
 
 type RainbowKitProviderProps = {
   children: ReactNode;

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { ChickenCard } from "./ChickenCard";
+import { ChickenCard } from "../ChickenCard";
 import { Chicken } from "@/types";
 
 const chickensForSale: Chicken[] = [

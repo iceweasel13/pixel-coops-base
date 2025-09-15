@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { CoopSlotCard } from "./CoopSlotCard";
+import { CoopSlotCard } from "../CoopSlotCard";
 import { CoopSlot } from "@/types";
 
 // GEÇİCİ VERİ: Bu veriyi daha sonra kontrattan çekeceğiz.

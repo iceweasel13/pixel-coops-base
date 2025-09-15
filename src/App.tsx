@@ -5,12 +5,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { IRefPhaserGame, PhaserGame } from './PhaserGame';
 import { EventBus } from './game/EventBus';
-import { ShopDialog } from './components/ShopDialog';
-import { CoopDialog } from './components/CoopDialog';
-import { CollectDialog } from './components/CollectDialog';
+import { ShopDialog } from './components/dialogs/ShopDialog';
+import { CoopDialog } from './components/dialogs/CoopDialog';
+import { CollectDialog } from './components/dialogs/CollectDialog';
 import { GameUI } from './components/GameUI';
 import { Toaster } from 'sonner';
-import { AnnouncementDialog } from './components/AnnouncementsDialog';
+import { AnnouncementDialog } from './components/dialogs/AnnouncementsDialog';
 
 // Bu bileşen 'async' olamaz çünkü hook'lar (useState, useEffect) kullanıyor.
 export default function App() {
