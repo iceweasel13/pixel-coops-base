@@ -28,6 +28,7 @@ export function CoopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
           backgroundColor: '#ecb17a',
           borderColor: '#b66e65',
         }}
+        showCloseButton={false}
       >
           <DialogClose
           aria-label="Kapat"
