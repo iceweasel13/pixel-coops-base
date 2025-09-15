@@ -125,7 +125,8 @@ export class Game extends Scene {
         this.camera = this.cameras.main;
         this.camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.camera.startFollow(this.player, true, 0.1, 0.1);
-        this.camera.setZoom(3);
+        // Game starts slightly closer to the map
+        this.camera.setZoom(3.5);
     }
 
     /**

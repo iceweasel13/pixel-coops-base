@@ -1,8 +1,19 @@
-import { Menu, Expand } from 'lucide-react';
+import { Menu, Expand, Shrink } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Balance, BalanceDisplay } from './BalanceDisplay';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export function GameUI() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsFullscreen(!!document.fullscreenElement);
+    // Initialize state on mount
+    update();
+    document.addEventListener('fullscreenchange', update);
+    return () => document.removeEventListener('fullscreenchange', update);
+  }, []);
+
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -32,16 +43,17 @@ export function GameUI() {
             <button
                 onClick={toggleFullScreen}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center justify-center hover:bg-gray-700 transition-colors"
-                aria-label="Tam Ekran"
+                aria-label={isFullscreen ? 'Tam Ekrandan Çık' : 'Tam Ekran'}
+                title={isFullscreen ? 'Tam Ekrandan Çık' : 'Tam Ekran'}
             >
-                <Expand size={24} />
+                {isFullscreen ? <Shrink size={30} /> : <Expand size={30} />}
             </button>
             <ConnectButton/>
             <button
                 onClick={() => alert('Menüye tıklandı!')}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"
             >
-                <Menu size={24} />
+                <Menu size={30} />
                 <span>Menü</span>
             </button>
         </div>

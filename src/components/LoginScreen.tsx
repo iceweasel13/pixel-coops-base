@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X } from 'lucide-react';
 import { StartPanel } from "./panels/StartPanel";
 import { SettingsPanel } from "./panels/SettingsPanel";
 
@@ -59,23 +58,37 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                        <span className="mb-12">
                          <Image src={'/logo.png'} alt='logo' height={240} width={240} />
                   </span>
-                        <button onClick={() => setSelectedMenu('start')} className={`${getMenuClass('start')} font-bold my-8 text-4xl`}>
+                        <button onClick={() => setSelectedMenu('start')} className={`${getMenuClass('start')} font-bold my-8 text-[clamp(1rem,5vw,2.25rem)]`}>
                             START GAME
                         </button>
                         
                         <div className="flex flex-col items-center space-y-6">
-                            <button onClick={() => setSelectedMenu('settings')} className={`${getMenuClass('settings')} font-bold my-8 text-4xl`}>
+                            <button onClick={() => setSelectedMenu('settings')} className={`${getMenuClass('settings')} font-bold my-8 text-[clamp(1rem,5vw,2.25rem)]`}>
                                 SETTINGS
                             </button>
-                            <a href="/how-to-play" target="_blank" rel="noopener noreferrer" className={`${getMenuClass('how-to-play')} font-bold  text-4xl`}>
+                            <a href="/how-to-play" target="_blank" rel="noopener noreferrer" className={`${getMenuClass('how-to-play')} font-bold  text-[clamp(1rem,5vw,2.25rem)]`}>
                                 HOW TO PLAY
                             </a>
-                            <a href="/trade" target="_blank" rel="noopener noreferrer" className={`${getMenuClass('trade')} font-bold  text-4xl`}>
+                            <a href="/trade" target="_blank" rel="noopener noreferrer" className={`${getMenuClass('trade')} font-bold  text-[clamp(1rem,5vw,2.25rem)]`}>
                                 TRADE $EGG
                             </a>
-                             <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white bg-green-400">
-                            <X size={32} />
-                        </a>
+                            <a
+                              href="https://twitter.com/yourprofile"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center w-10 h-10 rounded-sm bg-black text-gray-400 hover:text-white border border-gray-700 transition-colors"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                aria-label="X (Twitter)"
+                              >
+                                <path d="M2 3h5.2l5.37 7.36L18.6 3H22l-7.33 9.92L22 21h-5.2l-5.66-7.77L5.4 21H2l7.58-10.24L2 3z" />
+                              </svg>
+                            </a>
                         </div>
                     </div>
                     

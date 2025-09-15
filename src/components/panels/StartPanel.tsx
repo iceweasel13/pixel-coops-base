@@ -17,7 +17,7 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
         if (!addr) return "";
         return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
- const buttonClassName = `w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-xl transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed`;
+ const buttonClassName = `w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-[clamp(0.9rem,4vw,1.25rem)] transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed`;
     return (
         <div className="w-full max-w-md mx-auto text-white p-8 font-mono">
           
@@ -107,7 +107,7 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
                 <button
                     onClick={onGameStart}
                     disabled={!isConnected}
-                    className="w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-xl transition-all
+                    className="w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-[clamp(0.9rem,4vw,1.25rem)] transition-all
                                hover:bg-opacity-90 
                                disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
