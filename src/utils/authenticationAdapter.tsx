@@ -1,43 +1,38 @@
+// src/utils/authenticationAdapter.tsx
+
 import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
-import { createSiweMessage } from "viem/siwe";
+import { SiweMessage } from "siwe";
 import { signIn, signOut } from "next-auth/react";
 
 export const authenticationAdapter = createAuthenticationAdapter({
   getNonce: async () => {
-    const verifyRes = await fetch("/api/nonce", {
-      method: "POST", // Changed to POST
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}), // Include an empty body or any required data
-    });
-
-    if (!verifyRes.ok) {
-      throw new Error("Failed to fetch nonce");
-    }
-
-    const data = await verifyRes.json(); // Convert response to JSON
-    return data.nonce; // Return the fetched nonce
+    const response = await fetch("/api/nonce");
+    return await response.text();
   },
 
   createMessage: ({ nonce, address, chainId }) => {
-    return createSiweMessage({
+    return new SiweMessage({
       domain: window.location.host,
       address,
-      statement: "Welcome to the Monplace app",
+      statement: "Sign in with Ethereum to the app.",
       uri: window.location.origin,
       version: "1",
       chainId,
       nonce,
     });
   },
+
   verify: async ({ message, signature }) => {
-    const loginData = { message, signature };
-    const verifyRes = await signIn("credentials", {
+    const result = await signIn("credentials", {
+      message: JSON.stringify(message),
       redirect: false,
-      ...loginData,
+      signature,
     });
-    return Boolean(verifyRes?.ok);
+
+    return result?.ok === true;
   },
+
   signOut: async () => {
-    await signOut();
+    await signOut({ redirect: false });
   },
 });

@@ -1,123 +1,87 @@
+// src/auth.ts
 import CredentialsProvider from "next-auth/providers/credentials";
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, User } from "next-auth";
 import { SiweMessage } from "siwe";
-import { cookies } from "next/headers";
+import { IronSession } from "iron-session";
 
-interface AuthUser {
-  id: string;
-  accessToken: string;
-  walletAddress: string;
+// This is a helper type for the request object
+interface AuthorizeRequest extends Request {
+    session: IronSession;
 }
 
 export const authConfig: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      name: "Ethereum",
       credentials: {
-        message: { label: "message", type: "string" },
-        signature: { label: "signature", type: "string" },
+        message: {
+          label: "Message",
+          type: "text",
+          placeholder: "0x0",
+        },
+        signature: {
+          label: "Signature",
+          type: "text",
+          placeholder: "0x0",
+        },
       },
-      authorize: async (
-        credentials: Record<"message" | "signature", string> | undefined
-      ): Promise<AuthUser | null> => {
-        if (!credentials) {
-          console.error("No credentials provided.");
-          return null;
-        }
+      async authorize(credentials, req) {
+        // The 'req' object is now available here because we passed it in [...nextauth].ts
+        const ironSession = (req as unknown as AuthorizeRequest).session;
 
         try {
-          const siweMessage = new SiweMessage(credentials.message);
+          const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
+
+          if (!ironSession.nonce) {
+            console.error("Nonce not found in session.");
+            return null;
+          }
+          if (siwe.nonce !== ironSession.nonce) {
+             console.error("Invalid nonce in session.");
+            return null;
+          }
+
+          await siwe.verify({ signature: credentials?.signature || "" });
           
-          // 1. Nonce'ı iron-session yerine doğrudan cookie'den oku
-          const cookieStore = await cookies();
-          const nonce = cookieStore.get("siwe-nonce")?.value;
+          // Clear the nonce after successful verification
+          ironSession.nonce = undefined;
+          await ironSession.save();
 
-          // 2. Nonce'ın eşleşip eşleşmediğini kontrol et
-          if (nonce !== siweMessage.nonce) {
-            throw new Error("Invalid nonce: Nonce mismatch detected.");
-          }
-
-          // 3. İmzayı doğrula
-          const verificationResult = await siweMessage.verify({
-            signature: credentials.signature,
-            domain: siweMessage.domain,
-            nonce: siweMessage.nonce,
-          });
-
-          if (verificationResult) {
-            // 4. Başarılı doğrulamadan sonra nonce cookie'sini sil (tek kullanımlık olması için)
-            cookieStore.delete("siwe-nonce");
-
-            const user: AuthUser = {
-              id: verificationResult.data.address,
-              accessToken: "Ox1010", // Example token, replace with actual logic
-              walletAddress: verificationResult.data.address,
-            };
-            return user;
-          }
-
+          return {
+            id: siwe.address,
+            walletAddress: siwe.address,
+          } as User;
+        } catch (e) {
+          console.error(e);
           return null;
-        } catch (error) {
-          if (error instanceof Error) {
-            console.error("Login error:", error.message);
-            throw new Error(error.message);
-          } else {
-            console.error("Login error:", error);
-            throw new Error("An unknown error occurred.");
-          }
         }
       },
     }),
   ],
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.accessToken = user.accessToken as string;
-        token.walletAddress = user.walletAddress as string;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken as string;
-      if (session.user) {
-          session.user.walletAddress = token.walletAddress as string;
-      }
-      return session;
-    },
+    // Callbacks are now defined in the [...nextauth].ts wrapper
   },
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
-  // events bloğu genellikle production'da loglama için kullanılır, isteğe bağlıdır.
-  events: {}, 
 };
 
-// TypeScript tip tanımlamaları (Bunlar doğru ve gerekli)
+// Update your type declarations slightly
 declare module "next-auth" {
-  interface User {
-    accessToken: string;
-    walletAddress: string;
-  }
-
-  interface Session {
-    accessToken: string;
-    user: {
-      walletAddress: string;
-    };
-  }
+    interface User {
+      walletAddress?: string;
+    }
+  
+    interface Session {
+      user?: {
+        walletAddress?: string;
+      } & Omit<User, "id">;
+    }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
-    accessToken: string;
-    walletAddress: string;
-  }
+    interface JWT {
+        walletAddress?: string
+    }
 }

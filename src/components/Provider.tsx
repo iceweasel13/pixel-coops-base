@@ -1,8 +1,10 @@
+// src/components/Provider.tsx
+
 "use client";
 import { ReactNode } from "react";
 import RainbowKitProvider from "./RainbowKitProvider";
-import AuthProvider from "./AuthProvider";
-import { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
+import type { Session } from "next-auth";
 
 export default function Providers({
   children,
@@ -11,11 +13,11 @@ export default function Providers({
 }: {
   children: ReactNode;
   cookie: string;
-  session: Session;
+  session: Session | null;
 }) {
   return (
-    <AuthProvider session={session}>
+    <SessionProvider session={session}>
       <RainbowKitProvider cookie={cookie}>{children}</RainbowKitProvider>
-    </AuthProvider>
+    </SessionProvider>
   );
 }
