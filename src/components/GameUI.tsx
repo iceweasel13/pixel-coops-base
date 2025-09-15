@@ -1,7 +1,6 @@
 import { Menu, Expand, Shrink } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Balance, BalanceDisplay } from './BalanceDisplay';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Balances } from './game-ui/Balances';
 
 export function GameUI() {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -25,17 +24,13 @@ export function GameUI() {
   };
 
 
-  const balances: Balance[] = [
-    { icon: '/icons/ether.png', amount: 12.5, name: 'Ether' },
-    { icon: '/icons/egg.png', amount: 150, name: 'Egg' },
-  ];
+ 
 
   return (
     <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
         {/* Sol taraf: Bakiye Alanları */}
         <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
-            <BalanceDisplay balance={balances[0]} />
-            <BalanceDisplay balance={balances[1]} />
+            <Balances />
         </div>
 
         {/* Sağ taraf: Butonlar */}
@@ -48,7 +43,7 @@ export function GameUI() {
             >
                 {isFullscreen ? <Shrink size={30} /> : <Expand size={30} />}
             </button>
-            <ConnectButton/>
+           
             <button
                 onClick={() => alert('Menüye tıklandı!')}
                 className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"

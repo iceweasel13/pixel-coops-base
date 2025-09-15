@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Phaser Web3 Game</title>
+        <title>Pixel Coops</title>
         <meta
           name="description"
           content="A Web3 game built with Phaser and Next.js"
