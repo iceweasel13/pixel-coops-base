@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount } from 'wagmi';
-import { useReadContract, useWriteContract } from 'wagmi';
+import { useWriteContract, usePublicClient } from 'wagmi';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '../ui/input';
@@ -21,42 +21,61 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
   const { address: connectedAddress } = useAccount();
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const [result, setResult] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { refetch, isLoading: isReading } = useReadContract({
-    ...contractConfig,
-    functionName: func.name,
-    args: func.inputs.map((input: any) => inputs[input.name] || ''),
-    query: { enabled: false }
-  });
-
+  // Hook'lar
+  const publicClient = usePublicClient();
   const { writeContract, isPending: isWriting } = useWriteContract();
 
   const handleInputChange = (name: string, value: string) => {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  const validateInputs = () => {
+  // Hem okuma hem yazma için inputları kontrol eden ve hazırlayan fonksiyon
+  const validateAndPrepareArgs = () => {
+    const finalArgs: any[] = [];
     for (const inputDef of func.inputs) {
-      if (inputDef.type === 'address') {
-        const addressValue = inputs[inputDef.name];
-        if (!addressValue || !isAddress(addressValue)) {
-          toast.error(`Geçersiz Adres: Lütfen '${inputDef.name}' alanına geçerli bir Ethereum adresi girin.`);
-          return false;
+        const value = inputs[inputDef.name || `arg${func.inputs.indexOf(inputDef)}`];
+
+        if (value === undefined || value === '') {
+            toast.error(`Lütfen '${inputDef.name}' alanını doldurun.`);
+            return null;
         }
-      }
+
+        if (inputDef.type === 'address') {
+            if (!isAddress(value)) {
+                toast.error(`Geçersiz Adres: '${inputDef.name}' alanı için geçerli bir adres girin.`);
+                return null;
+            }
+            finalArgs.push(value);
+        } else if (inputDef.type.includes('uint')) {
+            try {
+                finalArgs.push(value.includes('.') ? parseEther(value) : BigInt(value));
+            } catch {
+                toast.error(`Geçersiz Sayı: '${inputDef.name}' alanı için geçerli bir sayı girin.`);
+                return null;
+            }
+        } else {
+            finalArgs.push(value);
+        }
     }
-    return true;
+    return finalArgs;
   };
 
   const executeRead = async () => {
-    if (!validateInputs()) return;
+    const preparedArgs = validateAndPrepareArgs();
+    if (preparedArgs === null && func.inputs.length > 0) return;
 
+    setIsLoading(true);
     toast.info(`"${func.name}" fonksiyonu okunuyor...`);
     try {
-        const { data: readData, isError, error } = await refetch();
-        if (isError) throw error;
+        const data = await publicClient.readContract({
+            ...contractConfig,
+            functionName: func.name,
+            args: preparedArgs || [],
+        });
         
-        const displayData = JSON.stringify(readData, (key, value) => 
+        const displayData = JSON.stringify(data, (key, value) => 
             typeof value === 'bigint' ? value.toString() : value, 2);
             
         setResult(displayData);
@@ -64,26 +83,14 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     } catch (err: any) {
         setResult(`Hata: ${err.message}`);
         toast.error(`Okuma hatası: ${err.shortMessage || err.message}`);
+    } finally {
+        setIsLoading(false);
     }
   };
   
   const executeWrite = () => {
-    if (!validateInputs()) return;
-    
-    const args = func.inputs.map((input: any) => {
-        const value = inputs[input.name];
-        if (input.type.includes('uint')) {
-            try {
-                return value.includes('.') ? parseEther(value) : BigInt(value);
-            } catch {
-                toast.error(`'${input.name}' için geçersiz sayı formatı.`);
-                return;
-            }
-        }
-        return value;
-    });
-
-    if (args.includes(undefined)) return;
+    const preparedArgs = validateAndPrepareArgs();
+    if (preparedArgs === null) return;
 
     const valueToSend = func.stateMutability === 'payable' ? parseEther(inputs.value || '0') : undefined;
 
@@ -91,7 +98,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     writeContract({
         ...contractConfig,
         functionName: func.name,
-        args: args as any,
+        args: preparedArgs as any,
         value: valueToSend
     }, {
         onSuccess: (hash) => toast.success(`İşlem başarıyla gönderildi! Hash: ${hash}`),
@@ -131,8 +138,8 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
             />
         )}
       </div>
-      <Button onClick={type === 'read' ? executeRead : executeWrite} disabled={isReading || isWriting}>
-        Çalıştır
+      <Button onClick={type === 'read' ? executeRead : executeWrite} disabled={isLoading || isWriting}>
+        {isLoading ? 'Okunuyor...' : isWriting ? 'Gönderiliyor...' : 'Çalıştır'}
       </Button>
       {result && (
         <pre className="mt-4 p-2 bg-muted rounded-md text-sm whitespace-pre-wrap break-all">
