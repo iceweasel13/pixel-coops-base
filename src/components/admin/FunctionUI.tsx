@@ -1,3 +1,5 @@
+// src/components/admin/FunctionUI.tsx
+
 "use client";
 
 import { useAccount } from 'wagmi';
@@ -23,7 +25,6 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
   const [result, setResult] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Hook'lar
   const publicClient = usePublicClient();
   const { writeContract, isPending: isWriting } = useWriteContract();
 
@@ -31,32 +32,53 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     setInputs(prev => ({ ...prev, [name]: value }));
   };
 
-  // Hem okuma hem yazma için inputları kontrol eden ve hazırlayan fonksiyon
   const validateAndPrepareArgs = () => {
     const finalArgs: any[] = [];
     for (const inputDef of func.inputs) {
-        const value = inputs[inputDef.name || `arg${func.inputs.indexOf(inputDef)}`];
+        const name = inputDef.name || `arg${func.inputs.indexOf(inputDef)}`;
+        const value = inputs[name];
 
         if (value === undefined || value === '') {
-            toast.error(`Lütfen '${inputDef.name}' alanını doldurun.`);
+            toast.error(`Lütfen '${name}' alanını doldurun.`);
             return null;
         }
 
-        if (inputDef.type === 'address') {
-            if (!isAddress(value)) {
-                toast.error(`Geçersiz Adres: '${inputDef.name}' alanı için geçerli bir adres girin.`);
-                return null;
-            }
-            finalArgs.push(value);
-        } else if (inputDef.type.includes('uint')) {
-            try {
-                finalArgs.push(value.includes('.') ? parseEther(value) : BigInt(value));
-            } catch {
-                toast.error(`Geçersiz Sayı: '${inputDef.name}' alanı için geçerli bir sayı girin.`);
-                return null;
-            }
-        } else {
-            finalArgs.push(value);
+        // Parametre tipine ve adına göre özel dönüşüm
+        switch (inputDef.type) {
+            case 'address':
+                if (!isAddress(value)) {
+                    toast.error(`Geçersiz Adres: '${name}' alanı için geçerli bir adres girin.`);
+                    return null;
+                }
+                finalArgs.push(value);
+                break;
+            
+            case 'bool':
+                if (value.toLowerCase() !== 'true' && value.toLowerCase() !== 'false') {
+                    toast.error(`Geçersiz Değer: '${name}' alanı için 'true' veya 'false' girin.`);
+                    return null;
+                }
+                finalArgs.push(value.toLowerCase() === 'true');
+                break;
+
+            case 'uint256':
+                try {
+                    // 'cost', 'price' veya 'value' içeren alanlar için ondalıklı (ether) dönüşüm yap
+                    if (name.toLowerCase().includes('cost') || name.toLowerCase().includes('price') || name.toLowerCase().includes('value')) {
+                        finalArgs.push(parseEther(value));
+                    } else {
+                    // 'power', 'stamina' gibi tam sayılar için BigInt kullan
+                        finalArgs.push(BigInt(value));
+                    }
+                } catch {
+                    toast.error(`Geçersiz Sayı: '${name}' alanı için geçerli bir sayısal değer girin.`);
+                    return null;
+                }
+                break;
+
+            default:
+                finalArgs.push(value);
+                break;
         }
     }
     return finalArgs;
