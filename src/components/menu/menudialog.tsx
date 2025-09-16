@@ -4,13 +4,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { SettingsPanel } from "@/components/panels/SettingsPanel";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { signOut } from "next-auth/react";
 import { Copy, LogOut } from "lucide-react";
 
-type MenuItem = "settings" | "how-to-play" | "trade";
+type MenuItem = "settings" | "how-to-play" | "trade" | "profile" | "referrals";
 
 export type MenuDialogProps = {
   open: boolean;
@@ -94,11 +95,13 @@ function WalletArea() {
 }
 
 export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
-  const [selectedMenu, setSelectedMenu] = useState<MenuItem>("settings");
+  const [selectedMenu, setSelectedMenu] = useState<MenuItem>("profile");
+  const { address } = useAccount();
+  const [copiedRef, setCopiedRef] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setSelectedMenu("settings");
+      setSelectedMenu("profile");
     }
   }, [open]);
 
@@ -106,6 +109,78 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
     switch (selectedMenu) {
       case "settings":
         return <SettingsPanel />;
+      case "profile":
+        return (
+          <div className="w-full text-white p-6">
+            <h2 className="text-2xl font-bold mb-4">Profile</h2>
+            <p className="text-gray-300 mb-4">View your wallet details, copy your address, and sign out.</p>
+            <WalletArea />
+          </div>
+        );
+      case "referrals": {
+        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        const referralUrl = address ? `${origin}/?ref=${address}` : "";
+        const sampleRefs = [
+          "0x12a3...9fB2",
+          "0x5Cde...11A0",
+          "0x98F1...3b44",
+          "0xA0B3...77c9",
+          "0x3E2d...0F01",
+        ];
+        const totalEarnings = "12.50 EGG"; // örnek toplam kazanç
+        const copyReferral = async () => {
+          if (!referralUrl) return;
+          try {
+            await navigator.clipboard.writeText(referralUrl);
+            setCopiedRef(true);
+            setTimeout(() => setCopiedRef(false), 1200);
+          } catch (_) {
+            // noop
+          }
+        };
+
+        return (
+          <div className="w-full text-white p-6">
+            <h2 className="text-2xl font-bold mb-3">Referrals</h2>
+            <p className="text-gray-300 mb-4">Earn extra rewards based on your number of referrals. More referrals mean more rewards.</p>
+
+            <div className="bg-black/50 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold mb-2">Referral Addresses</h3>
+              <ul className="list-disc list-inside text-gray-200">
+                {sampleRefs.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-black/50 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold mb-2">Total Referral Earnings</h3>
+              <p className="text-[#a4e24d] text-lg font-bold">{totalEarnings}</p>
+            </div>
+
+            <div className="bg-black/50 rounded-lg p-4">
+              <h3 className="font-semibold mb-2">Your Referral Link</h3>
+              {address ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    readOnly
+                    value={referralUrl}
+                    className="flex-1 bg-black/40 text-gray-200 px-3 py-2 rounded border border-gray-700 focus:outline-none"
+                  />
+                  <button
+                    onClick={copyReferral}
+                    className="inline-flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold px-3 py-2 rounded-md"
+                  >
+                    <Copy className="w-4 h-4" /> {copiedRef ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-300">Please connect your wallet to generate your referral link.</p>
+              )}
+            </div>
+          </div>
+        );
+      }
       case "how-to-play":
         return (
           <div className="text-center text-white p-8">
@@ -133,15 +208,30 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-black/30 border-none p-0 overflow-hidden sm:max-w-4xl">
+      <DialogContent showCloseButton={false} className="bg-black/30 border-none p-0 overflow-hidden sm:max-w-4xl">
+        <DialogClose aria-label="Close" className="absolute right-3 top-3 size-10">
+          <img src="/icons/close.png" alt="Close" className="h-10 w-10" />
+        </DialogClose>
 
         <div className="flex flex-col md:flex-row h-full min-h-[420px]">
           <div className="md:w-1/3 bg-black/80 flex flex-col items-center justify-center p-6 gap-6 text-center">
             <button
               onClick={() => onOpenChange(false)}
-              className="font-bold text-[clamp(1rem,4vw,1.75rem)] text-[#a4e24d]"
+              className="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-[#a4e24d] text-black font-bold text-[clamp(1rem,4vw,1.75rem)] hover:bg-[#93cf3f] transition-colors shadow"
             >
               RETURN TO GAME
+            </button>
+            <button
+              onClick={() => setSelectedMenu("profile")}
+              className={`${getMenuClass("profile")} font-bold text-[clamp(1rem,4vw,1.5rem)]`}
+            >
+              PROFILE
+            </button>
+            <button
+              onClick={() => setSelectedMenu("referrals")}
+              className={`${getMenuClass("referrals")} font-bold text-[clamp(1rem,4vw,1.5rem)]`}
+            >
+              REFERRALS
             </button>
             <button
               onClick={() => setSelectedMenu("settings")}
@@ -170,9 +260,7 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
           </div>
 
           <div className="md:w-2/3 bg-black/70 flex flex-col items-center justify-start p-6 gap-6">
-            {selectedMenu === "settings" ? null : <WalletArea />}
             {renderPanel()}
-            {selectedMenu === "settings" && <WalletArea />}
           </div>
         </div>
       </DialogContent>
