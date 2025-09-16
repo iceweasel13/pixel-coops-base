@@ -25,25 +25,22 @@ export function Balances() {
   }
 
   return (
-    <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
+    <div className="absolute top-2 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
       {/* Sol taraf: Bakiye Alanları */}
       <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
-        <BalanceDisplay 
-          icon="/icons/ether.png" 
-          name={ethBalance?.symbol || 'ETH'} 
+        <BalanceDisplay
+          icon="/icons/ether.png"
+          name={ethBalance?.symbol || 'ETH'}
           amount={ethBalance?.formatted}
-          isLoading={isEthLoading} 
+          isLoading={isEthLoading}
         />
-        <BalanceDisplay 
-          icon="/icons/egg.png" 
+        <BalanceDisplay
+          icon="/icons/egg.png"
           name={eggBalance?.symbol || 'EGG'}
           amount={eggBalance?.formatted}
           isLoading={isEggLoading}
         />
       </div>
-      
-      
-      <div></div>
     </div>
   );
 }

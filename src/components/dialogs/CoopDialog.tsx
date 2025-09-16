@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { CoopSlotCard } from "../CoopSlotCard";
@@ -23,7 +21,7 @@ export function CoopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="border-4 sm:max-w-4xl" // Diyalog genişliği
+        className="border-8 sm:max-w-4xl" // Diyalog genişliği
         style={{
           backgroundColor: '#ecb17a',
           borderColor: '#b66e65',

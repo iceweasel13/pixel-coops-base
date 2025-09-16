@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { ChickenCard } from "../ChickenCard";
@@ -21,7 +19,7 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     <Dialog open={isOpen} onOpenChange={onClose}>
      
       <DialogContent 
-        className="border-4 sm:max-w-6xl" 
+        className="border-8 sm:max-w-6xl" 
         style={{
           backgroundColor: '#ecb17a',
           borderColor: '#b66e65',
