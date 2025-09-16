@@ -5,9 +5,9 @@ import { CoopSlot } from "@/types";
 
 // GEÇİCİ VERİ: Bu veriyi daha sonra kontrattan çekeceğiz.
 const playerCoopSlots: CoopSlot[] = [
-    { id: 1, status: 'occupied', chicken: { id: 101, name: 'Clucky', imageUrl: '/chickens/chicken-1.png', productionRate: 0.1 } },
-    { id: 2, status: 'occupied', chicken: { id: 102, name: 'BokBok', imageUrl: '/chickens/chicken-2.png', productionRate: 0.2 } },
-    { id: 3, status: 'occupied', chicken: { id: 103, name: 'Goldie', imageUrl: '/chickens/chicken-4.png', productionRate: 1.2 } },
+    { id: 1, status: 'occupied', chicken: { id: 101, name: 'Clucky', imageUrl: '/assets/chickens/chicken1.png', productionRate: 0.1 } },
+    { id: 2, status: 'occupied', chicken: { id: 102, name: 'BokBok', imageUrl: '/assets/chickens/chicken1.png', productionRate: 0.2 } },
+    { id: 3, status: 'occupied', chicken: { id: 103, name: 'Goldie', imageUrl: '/assets/chickens/chicken1.png', productionRate: 1.2 } },
     { id: 4, status: 'empty' },
     { id: 5, status: 'empty' },
     { id: 6, status: 'locked' },

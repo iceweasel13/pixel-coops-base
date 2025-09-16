@@ -1,9 +1,11 @@
 import { Menu, Expand, Shrink } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { MenuDialog } from './menu/menudialog';
 import { Balances } from './game-ui/Balances';
 
 export function GameUI() {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMenuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const update = () => setIsFullscreen(!!document.fullscreenElement);
@@ -24,33 +26,36 @@ export function GameUI() {
   };
 
   return (
-    <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none text-xs md:text-base">
-      {/* Sol taraf: Bakiye Alanları */}
-      <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
-        <Balances />
-      </div>
+    <>
+      <MenuDialog open={isMenuOpen} onOpenChange={setMenuOpen} />
+      <div className="absolute top-4 left-0 right-4 z-10 flex justify-between items-start pointer-events-none text-xs md:text-base">
+        {/* Sol taraf: Bakiye Alanları */}
+        <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
+          <Balances />
+        </div>
 
-      {/* Sağ taraf: Butonlar */}
-      <div className="flex flex-row gap-2 pointer-events-auto mt-2">
-        <button
-          onClick={toggleFullScreen}
-          className="bg-gray-800 text-white p-2 rounded-md flex items-center justify-center hover:bg-gray-700 transition-colors"
-          aria-label={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
-          title={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
-        >
-          {isFullscreen
-            ? <Shrink className="w-6 h-6 md:w-[30px] md:h-[30px]" />
-            : <Expand className="w-6 h-6 md:w-[30px] md:h-[30px]" />}
-        </button>
+        {/* Sag taraf: Butonlar */}
+        <div className="flex flex-row gap-2 pointer-events-auto mt-2">
+          <button
+            onClick={toggleFullScreen}
+            className="bg-gray-800 text-white p-2 rounded-md flex items-center justify-center hover:bg-gray-700 transition-colors"
+            aria-label={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
+            title={isFullscreen ? 'Exit Full Screen' : 'Full screen'}
+          >
+            {isFullscreen
+              ? <Shrink className="w-6 h-6 md:w-[30px] md:h-[30px]" />
+              : <Expand className="w-6 h-6 md:w-[30px] md:h-[30px]" />}
+          </button>
 
-        <button
-          onClick={() => alert('Clicked Menu!')}
-          className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"
-        >
-          <Menu className="w-6 h-6 md:w-[30px] md:h-[30px]" />
-          <span className="leading-none">Menu</span>
-        </button>
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="bg-gray-800 text-white p-2 rounded-md flex items-center gap-2 hover:bg-gray-700 transition-colors"
+          >
+            <Menu className="w-6 h-6 md:w-[30px] md:h-[30px]" />
+            <span className="leading-none">Menu</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

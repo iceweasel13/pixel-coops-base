@@ -5,7 +5,7 @@ export function SettingsPanel() {
         <div className="text-center text-white p-8">
             <h2 className="text-3xl font-bold mb-6 text-[#a4e24d]">SETTINGS</h2>
             <div className="bg-black/30 p-6 rounded-lg flex items-center justify-between max-w-sm mx-auto">
-                <label htmlFor="sound-toggle" className="text-xl text-gray-300">
+                <label htmlFor="sound-toggle" className="text-xl text-gray-300 mr-2">
                     Sound
                 </label>
                 <div className="relative inline-block w-12 h-6 transition duration-200 ease-linear rounded-full">
@@ -22,7 +22,7 @@ export function SettingsPanel() {
                     ></label>
                     <label
                         htmlFor="sound-toggle"
-                        className="absolute block w-4 h-4 mt-1 ml-1 transition-transform duration-200 ease-linear transform bg-white rounded-full cursor-pointer"
+                        className="absolute block w-4 h-4 top-1 left-1 transition-transform duration-200 ease-linear transform bg-white rounded-full cursor-pointer"
                     ></label>
                 </div>
             </div>
