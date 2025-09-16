@@ -234,8 +234,8 @@ export class Game extends Scene {
             this.triggers.forEach(trigger => {
                 const isInside = Phaser.Geom.Intersects.RectangleToRectangle(playerRect, trigger.rect);
                 if (isInside && !trigger.inside) {
-                    this.isTouching = false;
-                    this.touchPosition.set(0, 0);
+                    //this.isTouching = false;
+                    //this.touchPosition.set(0, 0);
                     EventBus.emit('open-dialog', trigger.name);
                 } else if (!isInside && trigger.inside) {
                     EventBus.emit('close-dialog', trigger.name);
