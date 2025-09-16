@@ -2,31 +2,27 @@
 
 import { useAccount, useBalance } from 'wagmi';
 import { BalanceDisplay } from '../BalanceDisplay';
-import { eggTokenContract } from '@/contracts'; // Kontrat bilgilerimizi import ediyoruz
+import { useGame } from '@/context/GameContext'; // CONTEXT'İ İMPORT ET
+import { formatEther } from 'viem';
 
 export function Balances() {
   const { address, isConnected } = useAccount();
+  const { playerData, isLoading } = useGame(); // CONTEXT'TEN VERİLERİ ÇEK
 
-  // 1. ETH bakiyesini çek
+ 
   const { data: ethBalance, isLoading: isEthLoading } = useBalance({
     address: address,
-    // chainId: baseSepolia.id, // Gerekirse zincir ID'si belirtebilirsin
-  });
-
-  // 2. EGG Token bakiyesini çek
-  const { data: eggBalance, isLoading: isEggLoading } = useBalance({
-    address: address,
-    token: eggTokenContract.address, // Hangi token'ın bakiyesini istediğimizi belirtiyoruz
-    // chainId: baseSepolia.id,
   });
 
   if (!isConnected) {
-    return null; // Cüzdan bağlı değilse hiçbir şey gösterme
+    return null;
   }
+
+
+  const formattedEggBalance = formatEther(playerData.eggTokenBalance);
 
   return (
     <div className="absolute top-2 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
-      {/* Sol taraf: Bakiye Alanları */}
       <div className="flex flex-col gap-2 pl-4 pointer-events-auto">
         <BalanceDisplay
           icon="/icons/ether.png"
@@ -36,9 +32,9 @@ export function Balances() {
         />
         <BalanceDisplay
           icon="/icons/egg.png"
-          name={eggBalance?.symbol || 'EGG'}
-          amount={eggBalance?.formatted}
-          isLoading={isEggLoading}
+          name={'EGG'}
+          amount={formattedEggBalance}
+          isLoading={isLoading} // Context'in yüklenme durumunu kullan
         />
       </div>
     </div>

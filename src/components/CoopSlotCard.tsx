@@ -36,14 +36,14 @@ export function CoopSlotCard({ slot }: Props) {
 
   if (slot.status === 'empty') {
     return (
-      <Link href="/shop">
-        <div className="group flex h-[220px] w-[180px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-border transition-colors hover:border-primary hover:bg-accent/50 p-2">
-          <ShoppingCart className="h-12 w-12 text-muted-foreground transition-transform group-hover:scale-110" />
+     
+        <div className="group flex h-[220px] w-[180px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-border   p-2">
+         
           <p className="mt-2 text-sm font-semibold text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
-            Tavuk Satın Al
+         
           </p>
         </div>
-      </Link>
+      
     );
   }
 
