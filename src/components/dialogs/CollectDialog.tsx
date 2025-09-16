@@ -1,18 +1,34 @@
+/**
+ * @file CollectDialog.tsx
+ * @description This component renders a dialog for players to claim their accumulated in-game rewards ($EGG tokens).
+ * It displays the pending rewards and provides an action button to trigger the claim process.
+ */
+
 "use client";
 
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
-import { useGame } from "@/context/GameContext"; // Oyun verilerini ve fonksiyonlarını çekmek için
+import { useGame } from "@/context/GameContext"; // To interact with game state and contract functions
 import { Button } from "../ui/button";
-import { formatEther } from "viem"; // BigInt'i ondalıklı sayıya çevirmek için
+import { formatEther } from "viem"; // Utility to format BigInt values into a readable decimal string
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
+/**
+ * Renders the Collect Rewards Dialog.
+ * The component fetches the player's pending rewards from the GameContext and allows them
+ * to claim the rewards via the `claimRewards` function.
+ *
+ * @param {object} props - The component's properties.
+ * @param {boolean} props.isOpen - Controls the visibility of the dialog.
+ * @param {() => void} props.onClose - Function to call when the dialog should be closed.
+ * @returns {React.ReactElement} The rendered dialog component.
+ */
 export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
-  // GameContext'ten gerekli verileri ve fonksiyonları alıyoruz
+  // Fetch necessary data and actions from the global GameContext.
   const { playerData, claimRewards, isLoading, isConfirming } = useGame();
 
-  // Ödül miktarını formatlayalım (BigInt'ten okunabilir string'e)
-  // EGG token'ı 18 ondalığa sahip olduğu için formatEther'ı kullanabiliriz.
+  // Format the BigInt reward value into a human-readable string (e.g., "1.5").
+  // $EGG token uses 18 decimals, so formatEther is the appropriate utility.
   const formattedRewards = playerData ? formatEther(playerData.pendingRewards) : "0";
   const hasRewards = playerData && playerData.pendingRewards > BigInt(0);
 
@@ -23,26 +39,27 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
         showCloseButton={false}
       >
         <DialogClose
-          aria-label="Kapat"
+          aria-label="Close"
           className="absolute right-3 top-3 size-10"
         >
-          <img src="/icons/close.png" alt="Kapat" className="h-10 w-10" />
+          <img src="/icons/close.png" alt="Close button" className="h-10 w-10" />
         </DialogClose>
 
         <DialogHeader className="text-center space-y-4">
-          <DialogTitle className="text-4xl">Ödülleri Topla</DialogTitle>
+          <DialogTitle className="text-4xl">Collect Rewards</DialogTitle>
           <DialogDescription>
-            Birikmiş $EGG tokenlarını cüzdanına çek.
+            Withdraw your accumulated $EGG tokens to your wallet.
           </DialogDescription>
         </DialogHeader>
 
+        {/* Rewards Display Section */}
         <div className="my-8 flex flex-col items-center justify-center gap-4">
             <Image src="/icons/egg.png" alt="$EGG Token" width={80} height={80} />
             {isLoading ? (
                 <Loader2 className="h-12 w-12 animate-spin" />
             ) : (
                 <div className="text-center">
-                    <p className="text-lg">Biriken Miktar:</p>
+                    <p className="text-lg">Accumulated Amount:</p>
                     <p className="text-5xl font-bold font-mono tracking-tighter">
                         {parseFloat(formattedRewards).toFixed(6)}
                     </p>
@@ -51,12 +68,13 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
             )}
         </div>
 
+        {/* Action Button */}
         <Button
           onClick={claimRewards}
           disabled={!hasRewards || isConfirming || isLoading}
           className="w-full bg-[#5a4535] hover:bg-[#5a4535]/90 text-white py-6 text-xl"
         >
-          {isConfirming ? 'Onaylanıyor...' : 'Tümünü Topla'}
+          {isConfirming ? 'Confirming...' : 'Claim All'}
         </Button>
       </DialogContent>
     </Dialog>
