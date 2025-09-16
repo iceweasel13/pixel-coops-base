@@ -6,13 +6,15 @@ import App from "next/app";
 import Providers from "../components/auth/Provider";
 import { getSession, Session } from "next-auth/react"; // next-auth/react'ten getSession'ı import et
 
+import { GameProvider } from "@/context/GameContext";
 function MyApp({
   Component,
   pageProps: { session, cookie, ...pageProps }, // session ve cookie'yi pageProps'tan çıkar
 }: AppProps & { pageProps: { session: Session | null, cookie?: string } }) {
   return (
     <Providers session={session} cookie={cookie}>
-      <Component {...pageProps} />
+     <GameProvider>
+      <Component {...pageProps} /></GameProvider>
     </Providers>
   );
 }
