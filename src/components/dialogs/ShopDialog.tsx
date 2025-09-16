@@ -7,16 +7,17 @@ import { parseEther } from "viem";
 
 const starterChicken = { id: 0, name: "Başlangıç Tavuğu", imageUrl: "/chickens/chicken-1.png", power: 50, stamina: 50, cost: 0, };
 const shopChickenTypes = [
-    { id: 1, name: "Normal Tavuk", imageUrl: "/chickens/chicken-1.png", power: 100, stamina: 100, cost: 80 },
-    { id: 2, name: "Hızlı Tavuk", imageUrl: "/chickens/chicken-2.png", power: 150, stamina: 150, cost: 130 },
-    { id: 3, name: "Süper Tavuk", imageUrl: "/chickens/chicken-3.png", power: 220, stamina: 220, cost: 210 },
-    { id: 4, name: "Altın Tavuk", imageUrl: "/chickens/chicken-4.png", power: 300, stamina: 300, cost: 340 },
-    { id: 5, name: "Robot Tavuk", imageUrl: "/chickens/chicken-5.png", power: 430, stamina: 430, cost: 550 },
-    { id: 6, name: "Ninja Tavuk", imageUrl: "/chickens/chicken-6.png", power: 600, stamina: 600, cost: 880 },
-    { id: 7, name: "Ejderha Tavuk", imageUrl: "/chickens/chicken-7.png", power: 900, stamina: 900, cost: 1400 },
-    { id: 8, name: "Kozmik Tavuk", imageUrl: "/chickens/chicken-8.png", power: 1300, stamina: 1300, cost: 2200 },
-    { id: 9, name: "Tanrı Tavuk", imageUrl: "/chickens/chicken-1.png", power: 2000, stamina: 2000, cost: 3500 },
+    { id: 1, name: "Kahverengi Çilli Tavuk", imageUrl: "/assets/chickens/chicken2.png", power: 100, stamina: 100, cost: 80 },
+    { id: 2, name: "Siyah Tavuk", imageUrl: "/assets/chickens/chicken3.png", power: 150, stamina: 150, cost: 130 },
+    { id: 3, name: "Altın Sarısı Tavuk", imageUrl: "/assets/chickens/chicken4.png", power: 220, stamina: 220, cost: 210 },
+    { id: 4, name: "Gri Tavuk", imageUrl: "/assets/chickens/chicken5.png", power: 300, stamina: 300, cost: 340 },
+    { id: 5, name: "Kırçıllı Tavuk", imageUrl: "/assets/chickens/chicken6.png", power: 430, stamina: 430, cost: 550 },
+    { id: 6, name: "Mavi-Yeşil Tavuk", imageUrl: "/assets/chickens/chicken7.png", power: 600, stamina: 600, cost: 880 },
+    { id: 7, name: "Çilli Kahverengi Tavuk", imageUrl: "/assets/chickens/chicken8.png", power: 900, stamina: 900, cost: 1400 },
+    { id: 8, name: "Koyu Kahverengi Tavuk", imageUrl: "/assets/chickens/chicken9.png", power: 1300, stamina: 1300, cost: 2200 },
+    { id: 9, name: "Krem Renk Tavuk", imageUrl: "/assets/chickens/chicken10.png", power: 2000, stamina: 2000, cost: 3500 },
 ];
+
 
 
 export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
