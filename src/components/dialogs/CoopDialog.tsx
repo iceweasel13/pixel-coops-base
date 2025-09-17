@@ -4,7 +4,7 @@
  */
 
 "use client";
-
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { CoopSlotCard } from "../CoopSlotCard";
@@ -67,7 +67,7 @@ export function CoopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="border-8 sm:max-w-7xl text-[#5a4535]" style={{ backgroundColor: '#ecb17a', borderColor: '#b66e65' }} showCloseButton={false}>
-        <DialogClose aria-label="Close" className="absolute right-3 top-3 z-20 size-10"><img src="/icons/close.png" alt="Close" className="h-10 w-10" /></DialogClose>
+        <DialogClose aria-label="Close" className="absolute right-3 top-3 z-20 size-10"><Image src="/icons/close.png" alt="Close" className="h-10 w-10" /></DialogClose>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
             <div className="lg:col-span-2">
                 <DialogHeader className="text-center mb-4">

@@ -42,7 +42,7 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
           aria-label="Close"
           className="absolute right-3 top-3 size-10"
         >
-          <img src="/icons/close.png" alt="Close button" className="h-10 w-10" />
+         <Image src="/icons/close.png" alt="Close button" className="h-10 w-10" />
         </DialogClose>
 
         <DialogHeader className="text-center space-y-4">

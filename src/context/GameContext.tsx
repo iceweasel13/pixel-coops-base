@@ -36,7 +36,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             { abi: eggTokenContract.abi as Abi, address: eggTokenContract.address, functionName: 'balanceOf', args: [address!] },
             { abi: eggTokenContract.abi as Abi, address: eggTokenContract.address, functionName: 'allowance', args: [address!, chickenFarmContract.address] },
         ],
-        watch: isConnected && !!address,
         query: {
             enabled: isConnected && !!address,
             refetchInterval: isConnected ? 5000 : false,

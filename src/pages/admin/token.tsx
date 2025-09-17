@@ -41,7 +41,7 @@ export default function TokenAdminPage() {
         <div className="mt-8 p-4 border rounded-lg bg-muted">
             <h3 className="font-bold">`setMinter` Nasıl Kullanılır?</h3>
             <p className="text-sm text-muted-foreground mt-2">
-                `claimRewards` fonksiyonunun çalışması için, "Yazma (Token)" sekmesindeki `setMinter` fonksiyonunu bulup, input alanına aşağıdaki Ana Oyun Kontratı adresini yapıştırmanız ve işlemi onaylamanız gerekmektedir:
+                `claimRewards` fonksiyonunun çalışması için, Yazma (Token) sekmesindeki `setMinter` fonksiyonunu bulup, input alanına aşağıdaki Ana Oyun Kontratı adresini yapıştırmanız ve işlemi onaylamanız gerekmektedir:
             </p>
             <p className="font-mono bg-background p-2 rounded-md mt-2 text-xs break-all">
                 {chickenFarmContract.address}

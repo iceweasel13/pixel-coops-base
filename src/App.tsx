@@ -92,7 +92,7 @@ export default function App() {
                     <div
                         role="button"
                         tabIndex={0}
-                        aria-label={`${labelFor(pendingDialogType)} alanına geldiniz. Açmak için tıklayın veya Enter'a basın.`}
+                        aria-label={`${labelFor(pendingDialogType)} alanına geldiniz. Açmak için tıklayın veya Enter tuşuna basın.`}
                         onClick={confirmOpen}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') confirmOpen();
@@ -101,7 +101,7 @@ export default function App() {
                     >
                         <span className="font-medium">{labelFor(pendingDialogType)}</span>
                         <span className="mx-2">alanına geldiniz.</span>
-                        <span className="text-white/80">Açmak için tıklayın veya Enter'a basın.</span>
+                        <span className="text-white/80">Açmak için tıklayın veya Enter tuşuna basın.</span>
                     </div>
                 </div>
             )}

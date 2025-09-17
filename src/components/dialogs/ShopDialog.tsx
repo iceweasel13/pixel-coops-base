@@ -11,7 +11,7 @@ import { useGame } from "@/context/GameContext";
 import { Loader2 } from "lucide-react";
 import { parseEther } from "viem";
 import { starterChickenData, purchasableChickens } from "@/data/chickens";
-
+import Image from "next/image";
 /**
  * Static data definition for the special, one-time starter chicken.
  * This is kept separate from purchasable chickens to handle its unique logic.
@@ -64,7 +64,11 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="border-8 sm:max-w-6xl" style={{ backgroundColor: '#ecb17a', borderColor: '#b66e65' }} showCloseButton={false}>
         <DialogClose aria-label="Close" className="absolute right-3 top-3 size-10">
-            <img src="/icons/close.png" alt="Close" className="h-10 w-10" />
+              <Image
+                        src="/icons/close.png"
+                        alt="Kapat"
+                        className="pointer-events-none block h-10 w-10 select-none"
+                      />
         </DialogClose>
         <DialogHeader className="flex flex-col gap-2 mb-4">
             <DialogTitle className="text-4xl text-[#5a4535] text-center">Marketplace</DialogTitle>

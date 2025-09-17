@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-
+import Image from "next/image";
 export function AnnouncementDialog({
   isOpen,
   onClose,
@@ -24,7 +24,7 @@ export function AnnouncementDialog({
           aria-label="Kapat"
           className="absolute right-3 top-3 size-10 cursor-pointer rounded-xs border-0 bg-transparent opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-0"
         >
-          <img
+          <Image
             src="/icons/close.png"
             alt="Kapat"
             className="pointer-events-none block h-10 w-10 select-none"
