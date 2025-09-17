@@ -62,7 +62,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     
     const { writeContractAsync } = useWriteContract();
     type BaseWriteParams = Parameters<typeof writeContractAsync>[0];
-    type WriteParams = BaseWriteParams | (BaseWriteParams & { value: bigint });
+    type WriteParams = Omit<BaseWriteParams, "value"> & { value?: bigint };
     const handleTransaction = async (params: WriteParams) => {
         if (!isConnected) { toast.error("Lütfen cüzdanınızı bağlayın."); return; }
         let toastId: string | number = "";
@@ -106,6 +106,7 @@ export const useGame = () => {
     if (context === undefined) throw new Error('useGame must be used within a GameProvider');
     return context;
 };
+
 
 
 
