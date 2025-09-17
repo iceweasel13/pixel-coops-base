@@ -61,14 +61,15 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }, [contractData]);
     
     const { writeContractAsync } = useWriteContract();
-    type WriteParams = Parameters<typeof writeContractAsync>[0];
+    type BaseWriteParams = Parameters<typeof writeContractAsync>[0];
+    type WriteParams = BaseWriteParams | (BaseWriteParams & { value: bigint });
     const handleTransaction = async (params: WriteParams) => {
         if (!isConnected) { toast.error("Lütfen cüzdanınızı bağlayın."); return; }
         let toastId: string | number = "";
         try {
             setIsConfirming(true);
             toastId = toast.loading("Lütfen cüzdanınızdan işlemi onaylayın...");
-            const hash = await writeContractAsync(params);
+            const hash = await writeContractAsync(params as BaseWriteParams);
             toast.loading("İşlem onaylanıyor...", { id: toastId });
             await waitForTransactionReceipt(config, { hash, confirmations: 1 });
             toast.success("İşlem başarılı! Veriler güncelleniyor.", { id: toastId, duration: 3000 });
@@ -105,4 +106,6 @@ export const useGame = () => {
     if (context === undefined) throw new Error('useGame must be used within a GameProvider');
     return context;
 };
+
+
 
