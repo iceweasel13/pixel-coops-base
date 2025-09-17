@@ -1,5 +1,5 @@
 import ChickenFarmABI from './abi/ChickenFarmABI.json';
-import EggcoinABI from './abi/EggcoinABI.json';
+import EggCoinABI from './abi/EggCoinABI.json';
 
 export const chickenFarmContract = {
   address: process.env.NEXT_PUBLIC_MAIN_CONTRACT as `0x${string}`,
@@ -8,5 +8,5 @@ export const chickenFarmContract = {
 
 export const eggTokenContract = {
   address: process.env.NEXT_PUBLIC_EGG_TOKEN_CONTRACT as `0x${string}`,
-  abi: EggcoinABI,
+  abi: EggCoinABI,
 };
