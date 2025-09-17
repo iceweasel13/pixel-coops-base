@@ -88,6 +88,11 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     const preparedArgs = validateAndPrepareArgs();
     if (preparedArgs === null && func.inputs.length > 0) return;
 
+    if (!publicClient) {
+      toast.error('Blockchain client is not ready yet.');
+      return;
+    }
+
     setIsLoading(true);
     toast.info(`"${func.name}" fonksiyonu okunuyor...`);
     try {
@@ -171,3 +176,4 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     </div>
   );
 }
+

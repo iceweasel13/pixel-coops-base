@@ -1,14 +1,14 @@
 "use client";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export default function AuthProvider({
   children,
   session,
 }: {
   children: ReactNode;
-  session: Session;
+  session?: Session | null;
 }) {
   return (
     <SessionProvider baseUrl={process.env.NEXTAUTH_URL} session={session}>
@@ -16,3 +16,4 @@ export default function AuthProvider({
     </SessionProvider>
   );
 }
+

@@ -36,7 +36,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
             { abi: eggTokenContract.abi as Abi, address: eggTokenContract.address, functionName: 'balanceOf', args: [address!] },
             { abi: eggTokenContract.abi as Abi, address: eggTokenContract.address, functionName: 'allowance', args: [address!, chickenFarmContract.address] },
         ],
-        query: { enabled: isConnected && !!address, refetchInterval: 15000 }
+        watch: isConnected && !!address,
+        query: {
+            enabled: isConnected && !!address,
+            refetchInterval: isConnected ? 5000 : false,
+            refetchOnWindowFocus: true,
+        },
     });
     
     const [playerFarm, setPlayerFarm] = useState<IPlayerFarm | null>(null);
@@ -100,3 +105,4 @@ export const useGame = () => {
     if (context === undefined) throw new Error('useGame must be used within a GameProvider');
     return context;
 };
+

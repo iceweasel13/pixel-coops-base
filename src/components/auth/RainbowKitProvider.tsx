@@ -16,7 +16,7 @@ import { config } from "../../config";
 
 type RainbowKitProviderProps = {
   children: ReactNode;
-  cookie: string;
+  cookie?: string;
 };
 
 export default function RainbowKitProvider({
@@ -24,7 +24,7 @@ export default function RainbowKitProvider({
   cookie,
 }: RainbowKitProviderProps) {
   const { status } = useSession();
-  const initialState = cookieToInitialState(config, cookie);
+  const initialState = cookie ? cookieToInitialState(config, cookie) : undefined;
 
   return (
     <WagmiProvider config={config} initialState={initialState}>
@@ -34,11 +34,11 @@ export default function RainbowKitProvider({
           status={status}
         >
           <NextRainbowKitProvider
-               theme={lightTheme({
-              accentColor: '#6950F0', // Butonun ana rengi (Monad moru gibi)
-              accentColorForeground: '#FBFAF9', // Buton üzerindeki yazı rengi
-           
-            })}>
+            theme={lightTheme({
+              accentColor: "#6950F0",
+              accentColorForeground: "#FBFAF9",
+            })}
+          >
             <div className="h-full min-h-dvh overflow-x-clip font-body text-foreground">
               {children}
             </div>
@@ -48,3 +48,4 @@ export default function RainbowKitProvider({
     </WagmiProvider>
   );
 }
+

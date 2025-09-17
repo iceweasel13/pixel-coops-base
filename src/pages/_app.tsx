@@ -1,40 +1,48 @@
-// src/pages/_app.tsx
-
 import "@/styles/globals.css";
 import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
 import Providers from "../components/auth/Provider";
-import { getSession, Session } from "next-auth/react"; // next-auth/react'ten getSession'ı import et
+import { getSession } from "next-auth/react";
+import type { Session } from "next-auth";
 
 import { GameProvider } from "@/context/GameContext";
+
+type MyAppPageProps = AppProps["pageProps"] & {
+  session?: Session | null;
+  cookie?: string;
+};
+
 function MyApp({
   Component,
-  pageProps: { session, cookie, ...pageProps }, // session ve cookie'yi pageProps'tan çıkar
-}: AppProps & { pageProps: { session: Session | null, cookie?: string } }) {
+  pageProps,
+}: AppProps<MyAppPageProps>) {
+  const { session, cookie, ...restPageProps } = pageProps;
+
   return (
-    <Providers session={session} cookie={cookie}>
-     <GameProvider>
-      <Component {...pageProps} /></GameProvider>
+    <Providers session={session ?? undefined} cookie={cookie}>
+      <GameProvider>
+        <Component {...restPageProps} />
+      </GameProvider>
     </Providers>
   );
 }
 
-// Sunucu tarafında veya ilk yüklemede çalışacak kısım
 MyApp.getInitialProps = async (appContext: AppContext) => {
-  // next/app'in kendi getInitialProps'unu çalıştırarak diğer sayfalardaki
-  // getInitialProps'ların çalışmasını sağlıyoruz.
   const appProps = await App.getInitialProps(appContext);
   const { ctx } = appContext;
 
-  // Sunucu tarafında session ve cookie bilgilerini al
   const session = await getSession(ctx);
-  const cookie = ctx.req?.headers.cookie;
+  const cookie = ctx.req?.headers.cookie ?? "";
 
-  // Bu bilgileri pageProps olarak component'e gönder
-  appProps.pageProps.session = session;
-  appProps.pageProps.cookie = cookie;
-
-  return { ...appProps };
+  return {
+    ...appProps,
+    pageProps: {
+      ...appProps.pageProps,
+      session,
+      cookie,
+    },
+  };
 };
 
 export default MyApp;
+
