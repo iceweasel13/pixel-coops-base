@@ -66,6 +66,8 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <DialogClose aria-label="Close" className="absolute right-3 top-3 size-10">
               <Image
                         src="/icons/close.png"
+                        width={100}
+                        height={100}
                         alt="Kapat"
                         className="pointer-events-none block h-10 w-10 select-none"
                       />
