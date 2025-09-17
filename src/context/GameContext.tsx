@@ -5,7 +5,7 @@ import { useAccount, useReadContracts, useWriteContract } from 'wagmi';
 import { waitForTransactionReceipt } from '@wagmi/core';
 import { chickenFarmContract, eggTokenContract } from '@/contracts';
 import { toast } from 'sonner';
-import { parseEther, formatEther, WriteContractParameters } from 'viem';
+import { parseEther } from 'viem';
 import { Abi } from 'abitype';
 import { config } from '@/config';
 
@@ -61,13 +61,14 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }, [contractData]);
     
     const { writeContractAsync } = useWriteContract();
-    const handleTransaction = async (params: WriteContractParameters) => {
+    type WriteParams = Parameters<typeof writeContractAsync>[0];
+    const handleTransaction = async (params: WriteParams) => {
         if (!isConnected) { toast.error("Lütfen cüzdanınızı bağlayın."); return; }
         let toastId: string | number = "";
         try {
             setIsConfirming(true);
             toastId = toast.loading("Lütfen cüzdanınızdan işlemi onaylayın...");
-            const hash = await writeContractAsync(params as any);
+            const hash = await writeContractAsync(params);
             toast.loading("İşlem onaylanıyor...", { id: toastId });
             await waitForTransactionReceipt(config, { hash, confirmations: 1 });
             toast.success("İşlem başarılı! Veriler güncelleniyor.", { id: toastId, duration: 3000 });

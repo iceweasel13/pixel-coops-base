@@ -10,7 +10,7 @@ import { SettingsPanel } from "@/components/panels/SettingsPanel";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { signOut } from "next-auth/react";
 import { Copy, LogOut } from "lucide-react";
-
+import Image from "next/image";
 type MenuItem = "settings" | "how-to-play" | "trade" | "profile" | "referrals";
 
 export type MenuDialogProps = {
@@ -210,7 +210,7 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="bg-black/30 border-none p-0 overflow-hidden sm:max-w-4xl">
         <DialogClose aria-label="Close" className="absolute right-3 top-3 size-10">
-          <img src="/icons/close.png" alt="Close" className="h-10 w-10" />
+          <Image src="/icons/close.png" alt="Close" className="h-10 w-10" width={40} height={40} />
         </DialogClose>
 
         <div className="flex flex-col md:flex-row h-full min-h-[420px]">
@@ -267,3 +267,4 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
     </Dialog>
   );
 }
+
