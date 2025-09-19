@@ -52,7 +52,9 @@ export default function App() {
             EventBus.emit('update-chickens', indices);
         };
         EventBus.on('current-scene-ready', handler);
-        return () => EventBus.removeListener('current-scene-ready', handler);
+        return () => {
+            EventBus.removeListener('current-scene-ready', handler);
+        };
     }, [playerChickens]);
 
     const closeDialog = () => {
