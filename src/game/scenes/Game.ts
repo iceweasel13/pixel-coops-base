@@ -12,6 +12,15 @@ export class Game extends Scene {
     map: Phaser.Tilemaps.Tilemap;
     player: Phaser.Physics.Arcade.Sprite;
 
+    // Chickens
+    private chickenSprites: Phaser.GameObjects.Image[] = [];
+    private chickenTilePositions: { x: number; y: number }[] = [
+        { x: 40, y: 31 }, { x: 41, y: 31 }, { x: 42, y: 31 },
+        { x: 47, y: 31 }, { x: 48, y: 31 }, { x: 49, y: 31 },
+        { x: 40, y: 38 }, { x: 41, y: 38 }, { x: 42, y: 38 },
+        { x: 47, y: 38 }
+    ];
+
     // Harita Katmanları
     groundLayer: Phaser.Tilemaps.TilemapLayer;
     decorationsLayer: Phaser.Tilemaps.TilemapLayer;
@@ -38,6 +47,10 @@ export class Game extends Scene {
         this.createPlayerAnimations();
         this.setupCollisionsAndTriggers();
         this.setupCamera();
+        // Listen for chicken updates from UI
+        EventBus.on('update-chickens', (chickenIndices: number[]) => {
+            this.renderChickens(chickenIndices);
+        });
         this.setupInputControls(); // Klavye ve dokunmatik kontrolleri birleştirdik
 
         EventBus.emit('current-scene-ready', this);
@@ -244,5 +257,37 @@ export class Game extends Scene {
             });
         }
     }
-}
 
+    /**
+     * Owned tavuklari belirtilen karo merkezlerine cizer.
+     */
+    private renderChickens(chickenIndices: number[]) {
+        // Mevcut sprite'lari temizle
+        this.chickenSprites.forEach(s => s.destroy());
+        this.chickenSprites = [];
+
+        if (!Array.isArray(chickenIndices) || chickenIndices.length === 0) return;
+
+        const tileSize = this.map?.tileWidth || 16;
+        const maxCount = Math.min(chickenIndices.length, this.chickenTilePositions.length);
+
+        // Slight offsets to visually center sitting sprites
+        const yOffset = -(tileSize * 0.25);
+        const xOffset = tileSize * 0.10; // shift right ~10%
+
+        for (let i = 0; i < maxCount; i++) {
+            const idx = chickenIndices[i];
+            const pos = this.chickenTilePositions[i];
+            const worldX = pos.x * tileSize + tileSize / 2 + xOffset;
+            const worldY = pos.y * tileSize + tileSize / 2 + yOffset;
+            const key = `chicken_${idx}`;
+
+            const sprite = this.add.image(worldX, worldY, key).setOrigin(0.5, 0.5);
+            // 16x16 karoya göre %20 küçült
+            sprite.setDisplaySize(tileSize * 0.8, tileSize * 0.8);
+            // Zemin ve dekorasyonun uzerinde kalsin
+            sprite.setDepth(50);
+            this.chickenSprites.push(sprite);
+        }
+    }
+}

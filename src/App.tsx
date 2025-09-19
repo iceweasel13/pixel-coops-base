@@ -11,10 +11,12 @@ import { CollectDialog } from './components/dialogs/CollectDialog';
 import { GameUI } from './components/GameUI';
 import { Toaster } from 'sonner';
 import { AnnouncementDialog } from './components/dialogs/AnnouncementsDialog';
+import { useGame } from '@/context/GameContext';
 
 // Bu bileşen 'async' olamaz çünkü hook'lar (useState, useEffect) kullanıyor.
 export default function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
+    const { playerChickens } = useGame();
     // pendingDialogType: alana girildiğinde onay bekleyen diyalog tipi
     // activeDialogType: gerçekten açılmış olan diyalog
     const [pendingDialogType, setPendingDialogType] = useState<string | null>(null);
@@ -39,6 +41,22 @@ export default function App() {
             EventBus.removeListener('close-dialog', handleCloseDialog);
         };
     }, []);
+
+    // Phaser sahnesine sahip olunan tavuklari bildir
+    useEffect(() => {
+        const indices = (playerChickens || []).map((c: any) => Number(c.chickenIndex));
+        EventBus.emit('update-chickens', indices);
+    }, [playerChickens]);
+
+    // Sahne hazir oldugunda mevcut veriyi tekrar gonder
+    useEffect(() => {
+        const handler = () => {
+            const indices = (playerChickens || []).map((c: any) => Number(c.chickenIndex));
+            EventBus.emit('update-chickens', indices);
+        };
+        EventBus.on('current-scene-ready', handler);
+        return () => EventBus.removeListener('current-scene-ready', handler);
+    }, [playerChickens]);
 
     const closeDialog = () => {
         // Diyalog manuel kapatılırsa aktif olanı kapat, alandaysan onay istemi tekrar görünsün

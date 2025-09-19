@@ -39,16 +39,16 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
         showCloseButton={false}
       >
         <DialogClose
-          aria-label="Close"
-          className="absolute right-3 top-3 size-10"
+          aria-label="Kapat"
+          className="absolute right-3 top-3 size-10 cursor-pointer rounded-xs border-0 bg-transparent opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-0"
         >
-         <Image
-                                src="/icons/close.png"
-                                width={100}
-                                height={100}
-                                alt="Kapat"
-                                className="pointer-events-none block h-10 w-10 select-none"
-                              />
+          <Image
+            src="/icons/close.png"
+            width={100}
+            height={100}
+            alt="Kapat"
+            className="pointer-events-none block h-10 w-10 select-none"
+          />
         </DialogClose>
 
         <DialogHeader className="text-center space-y-4">
@@ -60,18 +60,18 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
         {/* Rewards Display Section */}
         <div className="my-8 flex flex-col items-center justify-center gap-4">
-            <Image src="/icons/egg.png" alt="$EGG Token" width={80} height={80} />
-            {isLoading ? (
-                <Loader2 className="h-12 w-12 animate-spin" />
-            ) : (
-                <div className="text-center">
-                    <p className="text-lg">Accumulated Amount:</p>
-                    <p className="text-5xl font-bold font-mono tracking-tighter">
-                        {parseFloat(formattedRewards).toFixed(6)}
-                    </p>
-                    <p className="text-lg">$EGG</p>
-                </div>
-            )}
+          <Image src="/icons/egg.png" alt="$EGG Token" width={80} height={80} />
+          {isLoading ? (
+            <Loader2 className="h-12 w-12 animate-spin" />
+          ) : (
+            <div className="text-center">
+              <p className="text-lg">Accumulated Amount:</p>
+              <p className="text-5xl font-bold font-mono tracking-tighter">
+                {parseFloat(formattedRewards).toFixed(6)}
+              </p>
+              <p className="text-lg">$EGG</p>
+            </div>
+          )}
         </div>
 
         {/* Action Button */}

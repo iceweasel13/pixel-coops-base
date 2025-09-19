@@ -24,13 +24,13 @@ export function AnnouncementDialog({
           aria-label="Kapat"
           className="absolute right-3 top-3 size-10 cursor-pointer rounded-xs border-0 bg-transparent opacity-90 transition-opacity hover:opacity-100 focus:outline-none focus:ring-0"
         >
-      <Image
-                             src="/icons/close.png"
-                             width={100}
-                             height={100}
-                             alt="Kapat"
-                             className="pointer-events-none block h-10 w-10 select-none"
-                           />
+          <Image
+            src="/icons/close.png"
+            width={100}
+            height={100}
+            alt="Kapat"
+            className="pointer-events-none block h-10 w-10 select-none"
+          />
         </DialogClose>
         <DialogHeader>
           <DialogTitle className="text-black/90">Announcements</DialogTitle>
