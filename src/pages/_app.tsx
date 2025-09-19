@@ -15,6 +15,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-// MyApp.getInitialProps bloğunu TAMAMEN SİLİYORUZ.
+// We are completely removing MyApp.getInitialProps.
 
 export default MyApp;

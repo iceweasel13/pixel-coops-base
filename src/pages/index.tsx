@@ -40,9 +40,9 @@ export default function Home() {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerSession(context.req, context.res, authConfig);
-  // iron-session'ı da burada başlatabiliriz, ancak nonce yönetimi API'da yapıldığı için
-  // genellikle burada doğrudan bir işlem yapmaya gerek kalmaz.
-  // Sadece cookie'yi client'a iletmek yeterlidir.
+  // We could also initialize iron-session here, but since nonce
+  // handling is done in the API, there is generally no need
+  // to do anything directly here. Passing the cookie is enough.
   const cookie = context.req.headers.cookie || "";
 
   return {

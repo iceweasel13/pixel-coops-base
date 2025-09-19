@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { parseEther } from "viem";
 import { starterChickenData, purchasableChickens } from "@/data/chickens";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 /**
  * Static data definition for the special, one-time starter chicken.
  * This is kept separate from purchasable chickens to handle its unique logic.
@@ -35,6 +36,15 @@ import Image from "next/image";
  */
 export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
   const { playerFarm, playerData, isLoading, isConfirming, getFreeStarterChicken, buyChicken, approveEggTokens } = useGame();
+
+  // Track which specific card initiated the current confirming action
+  // so only that card shows the loading state.
+  const [activeCardKey, setActiveCardKey] = useState<string | number | null>(null);
+
+  // Clear the active card when global confirming finishes.
+  useEffect(() => {
+    if (!isConfirming) setActiveCardKey(null);
+  }, [isConfirming]);
 
   if (isLoading || !playerFarm || !playerData) {
     return (
@@ -92,11 +102,14 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 chicken={starterChickenData}
                 isBuyable={false}
                 isFreebie={true}
-                isConfirming={isConfirming}
+                isConfirming={isConfirming && activeCardKey === "free"}
                 hasEnoughAllowance={true}
                 hasEnoughBalance={true}
                 onBuy={() => { }}
-                onGetFree={getFreeStarterChicken}
+                onGetFree={() => {
+                  setActiveCardKey("free");
+                  getFreeStarterChicken();
+                }}
                 onApprove={() => { }}
               />
             )}
@@ -113,11 +126,17 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                   chicken={chicken}
                   isBuyable={isBuyable}
                   isFreebie={false}
-                  isConfirming={isConfirming}
+                  isConfirming={isConfirming && activeCardKey === chicken.id}
                   hasEnoughBalance={hasEnoughBalance}
                   hasEnoughAllowance={hasEnoughAllowance}
-                  onBuy={() => buyChicken(chicken.id)}
-                  onApprove={approveEggTokens}
+                  onBuy={() => {
+                    setActiveCardKey(chicken.id);
+                    buyChicken(chicken.id);
+                  }}
+                  onApprove={() => {
+                    setActiveCardKey(chicken.id);
+                    approveEggTokens();
+                  }}
                   onGetFree={() => { }}
                 />
               );

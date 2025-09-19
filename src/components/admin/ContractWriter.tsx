@@ -2,13 +2,13 @@
 
 import { FunctionUI } from "./FunctionUI";
 
-// Props'ların tipini belirliyoruz
+// Define props types
 interface ContractWriterProps {
     contractConfig: {
         address: `0x${string}`;
         abi: any[];
     };
-    filter?: (fn: any) => boolean; // Fonksiyonları filtrelemek için opsiyonel bir prop
+    filter?: (fn: any) => boolean; // Optional prop to filter functions
     title: string;
 }
 
@@ -17,7 +17,7 @@ export function ContractWriter({
     filter,
     title,
 }: ContractWriterProps) {
-    // ABI'ı filtreleyerek sadece state değiştiren (yazma) fonksiyonlarını al
+    // Filter ABI to get only state-changing (write) functions
     let writeFunctions = contractConfig.abi.filter(
         (fn: any) =>
             fn.type === "function" &&
@@ -25,7 +25,7 @@ export function ContractWriter({
                 fn.stateMutability === "nonpayable")
     );
 
-    // Eğer bir filtre fonksiyonu gönderildiyse, listeyi ona göre tekrar filtrele
+    // If a filter function is provided, re-filter the list accordingly
     if (filter) {
         writeFunctions = writeFunctions.filter(filter);
     }
@@ -44,7 +44,7 @@ export function ContractWriter({
                 ))
             ) : (
                 <p className="text-muted-foreground">
-                    Bu kategoride yazılabilir fonksiyon bulunamadı.
+                    No writable functions found in this category.
                 </p>
             )}
         </div>

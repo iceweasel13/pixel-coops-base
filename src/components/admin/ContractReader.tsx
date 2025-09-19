@@ -2,7 +2,7 @@
 
 import { FunctionUI } from "./FunctionUI";
 
-// Props'ların tipini belirliyoruz
+// Define props types
 interface ContractReaderProps {
     contractConfig: {
         address: `0x${string}`;
@@ -11,7 +11,7 @@ interface ContractReaderProps {
 }
 
 export function ContractReader({ contractConfig }: ContractReaderProps) {
-    // ABI'ı filtreleyerek sadece 'view' veya 'pure' olan okuma fonksiyonlarını al
+    // Filter ABI to get only 'view' and 'pure' read functions
     const readFunctions = contractConfig.abi.filter(
         (fn: any) =>
             fn.type === "function" &&
@@ -21,7 +21,7 @@ export function ContractReader({ contractConfig }: ContractReaderProps) {
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold border-b pb-2">
-                Okuma Fonksiyonları (View/Pure)
+                Read Functions (View/Pure)
             </h2>
             {readFunctions.length > 0 ? (
                 readFunctions.map((func: any) => (
@@ -34,7 +34,7 @@ export function ContractReader({ contractConfig }: ContractReaderProps) {
                 ))
             ) : (
                 <p className="text-muted-foreground">
-                    Bu kontratta okunabilir fonksiyon bulunamadı.
+                    No readable functions found in this contract.
                 </p>
             )}
         </div>

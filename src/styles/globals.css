@@ -173,29 +173,29 @@ body {
     @apply bg-background text-foreground;
     }
 }
-/* Bu sınıfı eklediğin her element bu stile sahip olacak */
+/* Any element with this class will have these styles */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 12px; /* Scrollbar genişliği */
+  width: 12px; /* Scrollbar width */
 }
 
-/* Scrollbar'ın arka planı (çubuğun hareket ettiği yol) */
+/* Scrollbar track (the path where the thumb moves) */
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #ecb17a; /* Diyalog arkaplan rengi */
+  background: #ecb17a; /* Dialog background color */
   border-radius: 10px;
 }
 
-/* Scrollbar'ın hareket eden parçası */
+/* Scrollbar thumb */
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #b66e65; /* Diyalog border rengi */
+  background-color: #b66e65; /* Dialog border color */
   border-radius: 10px;
-  border: 3px solid #ecb17a; /* Thumb etrafında boşluk oluşturmak için */
+  border: 3px solid #ecb17a; /* Create spacing around the thumb */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #a05d54; /* Hover rengi */
+  background-color: #a05d54; /* Hover color */
 }
 
-/* Firefox için alternatif scrollbar stili */
+/* Alternative scrollbar style for Firefox */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #b66e65 #ecb17a;

@@ -1,7 +1,4 @@
-// Konum: src/App.tsx
-
-'use client'; // Bu bir istemci bileşenidir.
-
+'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { IRefPhaserGame, PhaserGame } from './PhaserGame';
 import { EventBus } from './game/EventBus';
@@ -13,22 +10,22 @@ import { Toaster } from 'sonner';
 import { AnnouncementDialog } from './components/dialogs/AnnouncementsDialog';
 import { useGame } from '@/context/GameContext';
 
-// Bu bileşen 'async' olamaz çünkü hook'lar (useState, useEffect) kullanıyor.
+// This component cannot be 'async' because it uses hooks (useState, useEffect).
 export default function App() {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const { playerChickens } = useGame();
-    // pendingDialogType: alana girildiğinde onay bekleyen diyalog tipi
-    // activeDialogType: gerçekten açılmış olan diyalog
+    // pendingDialogType: dialog type awaiting confirmation when entering an area
+    // activeDialogType: the dialog that is actually open
     const [pendingDialogType, setPendingDialogType] = useState<string | null>(null);
     const [activeDialogType, setActiveDialogType] = useState<string | null>(null);
 
     useEffect(() => {
         const handleOpenDialog = (objectName: string) => {
-            // Alana girildi; önce onay istemi göster
+            // Entered the area; show a confirmation prompt first
             setPendingDialogType(objectName);
         };
         const handleCloseDialog = () => {
-            // Alandan çıkıldı; hem bekleyen istemi hem de açık diyalogu kapat
+            // Left the area; close both the pending prompt and the open dialog
             setPendingDialogType(null);
             setActiveDialogType(null);
         };
@@ -42,13 +39,13 @@ export default function App() {
         };
     }, []);
 
-    // Phaser sahnesine sahip olunan tavuklari bildir
+    // Notify Phaser scene about owned chickens
     useEffect(() => {
         const indices = (playerChickens || []).map((c: any) => Number(c.chickenIndex));
         EventBus.emit('update-chickens', indices);
     }, [playerChickens]);
 
-    // Sahne hazir oldugunda mevcut veriyi tekrar gonder
+    // When the scene is ready, resend current data
     useEffect(() => {
         const handler = () => {
             const indices = (playerChickens || []).map((c: any) => Number(c.chickenIndex));
@@ -59,15 +56,15 @@ export default function App() {
     }, [playerChickens]);
 
     const closeDialog = () => {
-        // Diyalog manuel kapatılırsa aktif olanı kapat, alandaysan onay istemi tekrar görünsün
+        // If the dialog is closed manually, close the active one
         setActiveDialogType(null);
     };
 
-    // Onay istemine Enter ile onay verme (veya callback ile)
+    // Confirm opening with Enter (or via callback)
     const confirmOpen = useCallback(() => {
         if (pendingDialogType) {
             setActiveDialogType(pendingDialogType);
-            // pending'i temizlemiyoruz; alandan çıkınca temizlenecek.
+            // Do not clear pending; it will clear when leaving the area.
         }
     }, [pendingDialogType]);
 
@@ -86,13 +83,13 @@ export default function App() {
     const labelFor = (type: string | null) => {
         switch (type) {
             case 'shop':
-                return 'Mağaza';
+                return 'Shop';
             case 'coop':
-                return 'Kümes';
+                return 'Coop';
             case 'collect':
-                return 'Toplama';
+                return 'Collect';
             case 'announcements':
-                return 'Duyurular';
+                return 'Announcements';
             default:
                 return '';
         }
@@ -104,13 +101,13 @@ export default function App() {
             <GameUI />
             <PhaserGame ref={phaserRef} />
             
-            {/* Alana girince onay isteyen küçük bildirim */}
+            {/* Small notification asking for confirmation when entering an area */}
             {pendingDialogType && !activeDialogType && (
-                <div className="pointer-events-none fixed top-[30%] left-1/2 -translate-x-1/2 z-30">
+                <div className="pointer-events-none fixed top-[30%] left-1/2 -translate-x-1/2 z-5">
                     <div
                         role="button"
                         tabIndex={0}
-                        aria-label={`${labelFor(pendingDialogType)} alanına geldiniz. Açmak için tıklayın veya Enter tuşuna basın.`}
+                        aria-label={`You arrived at the ${labelFor(pendingDialogType)} area. Click to open or press Enter.`}
                         onClick={confirmOpen}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') confirmOpen();
@@ -118,8 +115,8 @@ export default function App() {
                         className="pointer-events-auto select-none rounded-md bg-black/70 px-4 py-2 text-white shadow-lg ring-1 ring-white/20 hover:bg-black/80 focus:outline-hidden focus:ring-2 focus:ring-[#a4e24d] cursor-pointer"
                     >
                         <span className="font-medium">{labelFor(pendingDialogType)}</span>
-                        <span className="mx-2">alanına geldiniz.</span>
-                        <span className="text-white/80">Açmak için tıklayın veya Enter tuşuna basın.</span>
+                        <span className="mx-2">area reached.</span>
+                        <span className="text-white/80">Click to open or press Enter.</span>
                     </div>
                 </div>
             )}

@@ -9,14 +9,14 @@ import { parseEther } from 'viem';
 import { Abi } from 'abitype';
 import { config } from '@/config';
 
-// Tipler
+// Types
 export interface IPlayerFarm { farmIndex: number; maxChickens: number; currChickens: number; totalProductionPower: bigint; currProductionPower: bigint; x: number; y: number; }
 interface IPlayerData { hasFreeChicken: boolean; pendingRewards: bigint; farmUpgradeCooldown: number; eggTokenBalance: bigint; eggTokenAllowance: bigint; }
 interface IGameContext {
     playerFarm: IPlayerFarm | null; playerData: IPlayerData; playerChickens: any[]; isLoading: boolean; isConfirming: boolean;
     purchaseInitialFarm: (referral: string) => void; getFreeStarterChicken: () => void;
     buyChicken: (chickenIndex: number) => void; buyNewFarm: () => void; claimRewards: () => void;
-    approveEggTokens: () => void; // Argüman almayacak şekilde güncellendi
+    approveEggTokens: () => void; // Updated to take no arguments
     refetchData: () => void;
 }
 
@@ -63,20 +63,35 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const { writeContractAsync } = useWriteContract();
     type BaseWriteParams = Parameters<typeof writeContractAsync>[0];
     type WriteParams = Omit<BaseWriteParams, "value"> & { value?: bigint };
+    const isUserRejection = (err: any) => {
+        const msg = (err?.shortMessage || err?.message || '').toString().toLowerCase();
+        return (
+            err?.code === 4001 ||
+            err?.name === 'UserRejectedRequestError' ||
+            err?.cause?.name === 'UserRejectedRequestError' ||
+            msg.includes('user rejected') ||
+            msg.includes('rejected the request')
+        );
+    };
+
     const handleTransaction = async (params: WriteParams) => {
-        if (!isConnected) { toast.error("Lütfen cüzdanınızı bağlayın."); return; }
+        if (!isConnected) { toast.error("Please connect your wallet."); return; }
         let toastId: string | number = "";
         try {
             setIsConfirming(true);
-            toastId = toast.loading("Lütfen cüzdanınızdan işlemi onaylayın...");
+            toastId = toast.loading("Please confirm the transaction in your wallet...");
             const hash = await writeContractAsync(params as BaseWriteParams);
-            toast.loading("İşlem onaylanıyor...", { id: toastId });
+            toast.loading("Confirming transaction...", { id: toastId });
             await waitForTransactionReceipt(config, { hash, confirmations: 1 });
-            toast.success("İşlem başarılı! Veriler güncelleniyor.", { id: toastId, duration: 3000 });
+            toast.success("Transaction successful! Updating data.", { id: toastId, duration: 3000 });
             await refetch();
         } catch (error: any) {
-            console.error("Transaction Error:", error);
-            toast.error(`İşlem Başarısız: ${error.shortMessage || error.message}`, { id: toastId, duration: 5000 });
+            if (isUserRejection(error)) {
+                toast.info("İşlem iptal edildi.", { id: toastId, duration: 2500 });
+            } else {
+                console.error("Transaction Error:", error);
+                toast.error(`Transaction failed: ${error.shortMessage || error.message}` , { id: toastId, duration: 5000 });
+            }
         } finally { setIsConfirming(false); }
     };
     
@@ -91,8 +106,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const purchaseInitialFarm = (referral: string) => handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "purchaseInitialFarm", args: [referral || "0x0000000000000000000000000000000000000000"], value: parseEther("0.005") });
-    const getFreeStarterChicken = () => { const slot = findNextAvailableSlot(); if (slot) handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "getFreeStarterChicken", args: [slot.x, slot.y] }); else toast.error("Çiftliğinde boş yer yok!"); };
-    const buyChicken = (chickenIndex: number) => { const slot = findNextAvailableSlot(); if (slot) handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "buyChicken", args: [chickenIndex, slot.x, slot.y] }); else toast.error("Çiftliğinde boş yer yok!"); };
+    const getFreeStarterChicken = () => { const slot = findNextAvailableSlot(); if (slot) handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "getFreeStarterChicken", args: [slot.x, slot.y] }); else toast.error("No empty space in your farm!"); };
+    const buyChicken = (chickenIndex: number) => { const slot = findNextAvailableSlot(); if (slot) handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "buyChicken", args: [chickenIndex, slot.x, slot.y] }); else toast.error("No empty space in your farm!"); };
     const buyNewFarm = () => handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "buyNewFarm", args: [] });
     const claimRewards = () => handleTransaction({ address: chickenFarmContract.address, abi: chickenFarmContract.abi, functionName: "claimRewards", args: [] });
 

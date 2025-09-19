@@ -272,8 +272,8 @@ export class Game extends Scene {
         const maxCount = Math.min(chickenIndices.length, this.chickenTilePositions.length);
 
         // Slight offsets to visually center sitting sprites
-        const yOffset = -(tileSize * 0.25);
-        const xOffset = tileSize * 0.10; // shift right ~10%
+        const yOffset = -(tileSize * 0.2);// shift down ~5% , center is 0.25
+        const xOffset = tileSize * 0.07; // shift right ~5%
 
         for (let i = 0; i < maxCount; i++) {
             const idx = chickenIndices[i];

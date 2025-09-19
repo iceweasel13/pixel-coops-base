@@ -20,22 +20,22 @@ export const authConfig: NextAuthOptions = {
       },
       authorize: async (credentials, req: NextApiRequest | any): Promise<AuthUser | null> => {
         if (!credentials?.message || !credentials?.signature) {
-          console.error("Credentials eksik: 'message' veya 'signature' gönderilmedi.");
+          console.error("Missing credentials: 'message' or 'signature' was not provided.");
           return null;
         }
 
         try {
           const siweMessage = new SiweMessage(credentials.message);
           
-          // --- DEĞİŞİKLİK: Cookie'yi headers'dan manuel olarak okuyoruz ---
+          // CHANGE: Manually read cookie from headers
           const parsedCookies = cookie.parse(req.headers?.cookie || "");
           const nonce = parsedCookies["siwe-nonce"];
           // -----------------------------------------------------------------
 
           if (!nonce) {
-            // Daha açıklayıcı bir log ekleyelim
-            console.error("Nonce cookie 'req.headers.cookie' içinde bulunamadı.");
-            throw new Error("Nonce cookie bulunamadı.");
+            // Add a more descriptive log
+            console.error("Nonce cookie not found in 'req.headers.cookie'.");
+            throw new Error("Nonce cookie not found.");
           }
 
           const verificationResult = await siweMessage.verify({
@@ -55,7 +55,7 @@ export const authConfig: NextAuthOptions = {
           return null;
 
         } catch (error) {
-          console.error("Authorize try-catch hatası:", error);
+          console.error("Authorize try-catch error:", error);
           return null;
         }
       },
@@ -81,7 +81,7 @@ export const authConfig: NextAuthOptions = {
   cookies: { /* ... */ },
   events: {},
 };
-// TypeScript tip tanımlamaları (Bunlar doğru ve gerekli)
+// TypeScript type declarations (correct and required)
 declare module "next-auth" {
   interface User {
     accessToken: string;

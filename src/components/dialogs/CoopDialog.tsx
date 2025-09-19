@@ -52,7 +52,12 @@ export function CoopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
       const templateData = chickenDataMap.get(chickenIndex) || { name: "Bilinmeyen Tavuk", imageUrl: "/assets/chickens/chicken1.png" };
 
       // Dinamik ve statik veriyi birleştirerek tam bir tavuk objesi oluştur
-      const fullChickenData = { ...templateData, ...ownedChicken };
+      const fullChickenData = {
+        ...templateData,
+        ...ownedChicken,
+        // Use sitting chicken sprites in My Coop view
+        imageUrl: `/assets/sittingChicken/chicken${chickenIndex}.png`,
+      };
 
       return { id, status: 'occupied' as const, chicken: fullChickenData };
     }

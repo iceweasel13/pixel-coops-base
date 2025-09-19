@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { generateNonce } from "siwe";
-import { serialize } from 'cookie'; // Cookie oluşturmak için yardımcı
+import { serialize } from 'cookie'; // Helper to create cookies
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Bu endpoint'in sadece POST isteklerini kabul ettiğinden emin olalım
+  // Ensure this endpoint accepts only POST requests
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -21,10 +21,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       path: '/',
     });
 
-    // Cookie'yi response header'ına ekliyoruz
+    // Add the cookie to the response header
     res.setHeader('Set-Cookie', cookie);
     
-    // Nonce'ı JSON olarak client'a gönderiyoruz
+    // Send the nonce to the client as JSON
     res.status(200).json({ nonce });
 
   } catch (error) {

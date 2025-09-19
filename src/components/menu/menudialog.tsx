@@ -208,7 +208,10 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="bg-black/30 border-none p-0 overflow-hidden sm:max-w-4xl">
+      <DialogContent
+        showCloseButton={false}
+        className="bg-black/30 border-none p-0 sm:max-w-4xl max-h-[calc(100vh-2rem)] overflow-y-auto"
+      >
         <DialogClose aria-label="Close" className="absolute right-3 top-3 size-10">
           <Image src="/icons/close.png" alt="Close" className="h-10 w-10" width={40} height={40} />
         </DialogClose>

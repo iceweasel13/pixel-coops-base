@@ -14,14 +14,14 @@ type Props = {
 export function CoopSlotCard({ slot }: Props) {
 
   const handleUpgrade = () => {
-    toast.info(`Slot ${slot.id} için yükseltme işlemi başlıyor...`);
+    toast.info(`Starting upgrade for slot ${slot.id}...`);
   };
 
   const handleSell = () => {
     toast.promise(new Promise(resolve => setTimeout(resolve, 1500)), {
-        loading: `${slot.chicken?.name} satılıyor...`,
-        success: `${slot.chicken?.name} başarıyla satıldı!`,
-        error: "Satış sırasında bir hata oluştu."
+        loading: `Selling ${slot.chicken?.name}...`,
+        success: `${slot.chicken?.name} sold successfully!`,
+        error: "An error occurred during the sale."
     });
   }
 
@@ -50,7 +50,7 @@ export function CoopSlotCard({ slot }: Props) {
   if (slot.status === 'occupied' && slot.chicken) {
     return (
       <div className="relative group flex h-[220px] w-[250px] flex-col items-center justify-between rounded-lg   bg-[url(/assets/coop.png)] bg-cover p-4">
-        <Image src={slot.chicken.imageUrl} alt={slot.chicken.name} width={100} height={100} className="object-contain mt-12.5"/>
+        <Image src={slot.chicken.imageUrl} alt={slot.chicken.name} width={140} height={140} className="object-contain mt-12.5"/>
         <div className="text-center">
             
            

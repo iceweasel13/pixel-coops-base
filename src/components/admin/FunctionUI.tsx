@@ -39,7 +39,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
         const value = inputs[name];
 
         if (value === undefined || value === '') {
-            toast.error(`Lütfen '${name}' alanını doldurun.`);
+            toast.error(`Please fill the '${name}' field.`);
             return null;
         }
 
@@ -47,7 +47,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
         switch (inputDef.type) {
             case 'address':
                 if (!isAddress(value)) {
-                    toast.error(`Geçersiz Adres: '${name}' alanı için geçerli bir adres girin.`);
+                    toast.error(`Invalid address: enter a valid address for '${name}'.`);
                     return null;
                 }
                 finalArgs.push(value);
@@ -55,7 +55,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
             
             case 'bool':
                 if (value.toLowerCase() !== 'true' && value.toLowerCase() !== 'false') {
-                    toast.error(`Geçersiz Değer: '${name}' alanı için 'true' veya 'false' girin.`);
+                    toast.error(`Invalid value: enter 'true' or 'false' for '${name}'.`);
                     return null;
                 }
                 finalArgs.push(value.toLowerCase() === 'true');
@@ -63,15 +63,15 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
 
             case 'uint256':
                 try {
-                    // 'cost', 'price' veya 'value' içeren alanlar için ondalıklı (ether) dönüşüm yap
+                    // Convert decimals (ether) for fields containing 'cost', 'price' or 'value'
                     if (name.toLowerCase().includes('cost') || name.toLowerCase().includes('price') || name.toLowerCase().includes('value')) {
                         finalArgs.push(parseEther(value));
                     } else {
-                    // 'power', 'stamina' gibi tam sayılar için BigInt kullan
+                    // Use BigInt for integers like 'power', 'stamina'
                         finalArgs.push(BigInt(value));
                     }
                 } catch {
-                    toast.error(`Geçersiz Sayı: '${name}' alanı için geçerli bir sayısal değer girin.`);
+                    toast.error(`Invalid number: enter a valid numeric value for '${name}'.`);
                     return null;
                 }
                 break;
@@ -94,7 +94,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     }
 
     setIsLoading(true);
-    toast.info(`"${func.name}" fonksiyonu okunuyor...`);
+    toast.info(`Reading function "${func.name}"...`);
     try {
         const data = await publicClient.readContract({
             ...contractConfig,
@@ -106,10 +106,10 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
             typeof value === 'bigint' ? value.toString() : value, 2);
             
         setResult(displayData);
-        toast.success(`"${func.name}" başarıyla okundu!`);
+        toast.success(`"${func.name}" read successfully!`);
     } catch (err: any) {
-        setResult(`Hata: ${err.message}`);
-        toast.error(`Okuma hatası: ${err.shortMessage || err.message}`);
+        setResult(`Error: ${err.message}`);
+        toast.error(`Read error: ${err.shortMessage || err.message}`);
     } finally {
         setIsLoading(false);
     }
@@ -121,14 +121,14 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
 
     const valueToSend = func.stateMutability === 'payable' ? parseEther(inputs.value || '0') : undefined;
 
-    toast.info(`"${func.name}" işlemi için cüzdan onayı bekleniyor...`);
+    toast.info(`Awaiting wallet approval for "${func.name}"...`);
     writeContract({
         ...contractConfig,
         functionName: func.name,
         args: preparedArgs as any,
         value: valueToSend
     }, {
-        onSuccess: (hash) => toast.success(`İşlem başarıyla gönderildi! Hash: ${hash}`),
+        onSuccess: (hash) => toast.success(`Transaction submitted successfully! Hash: ${hash}`),
         onError: (error) => toast.error(`Hata: ${ error.message}`),
     });
   };
@@ -152,21 +152,21 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
                 className="shrink-0"
                 onClick={() => handleInputChange(input.name || `arg${index}`, connectedAddress || '')}
               >
-                Benim Adresim
+                My Address
               </Button>
             )}
           </div>
         ))}
         {func.stateMutability === 'payable' && (
              <Input
-                placeholder="Gönderilecek ETH Miktarı (Örn: 0.005)"
+                placeholder="ETH amount to send (e.g., 0.005)"
                 value={inputs.value || ''}
                 onChange={(e) => handleInputChange('value', e.target.value)}
             />
         )}
       </div>
       <Button onClick={type === 'read' ? executeRead : executeWrite} disabled={isLoading || isWriting}>
-        {isLoading ? 'Okunuyor...' : isWriting ? 'Gönderiliyor...' : 'Çalıştır'}
+        {isLoading ? 'Reading...' : isWriting ? 'Submitting...' : 'Execute'}
       </Button>
       {result && (
         <pre className="mt-4 p-2 bg-muted rounded-md text-sm whitespace-pre-wrap break-all">
