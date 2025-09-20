@@ -2,22 +2,13 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { starterChickenData, purchasableChickens } from '@/data/chickens'
 import { farmUpgrades } from '@/data/upgrades'
-import { useGame } from '@/context/GameContext'
 import { useMemo } from 'react'
 
 export default function HowToPlay() {
-  const { playerFarm, playerData } = useGame();
 
   const chickens = useMemo(() => [starterChickenData, ...purchasableChickens], []);
 
-  const formatCooldown = (secs: number) => {
-    if (!secs || secs <= 0) return 'Ready now';
-    const h = Math.floor(secs / 3600);
-    const m = Math.floor((secs % 3600) / 60);
-    const s = secs % 60;
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    return `${pad(h)}:${pad(m)}:${pad(s)}`;
-  };
+  // Static guide content only; no live player data on this page.
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -164,7 +155,7 @@ export default function HowToPlay() {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-gray-400 mt-2">Upgrades increase capacity and base hashrate. Limit: 1 upgrade per cooldown period. Current cooldown: {formatCooldown(playerData?.farmUpgradeCooldown || 0)}</p>
+          <p className="text-xs text-gray-400 mt-2">Upgrades increase capacity and base hashrate. Limit: 1 upgrade per cooldown period.</p>
         </section>
 
         {/* Limits & Rules */}
@@ -177,15 +168,13 @@ export default function HowToPlay() {
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5">
               <div className="text-sm font-medium mb-1">Farm Upgrade Cooldown</div>
-              <p className="text-gray-300 text-sm">Upgrade your farm capacity once per cooldown period. Günlük yükseltme sınırı: 1.</p>
-              <p className="text-gray-400 text-xs mt-1">Next upgrade in: {formatCooldown(playerData?.farmUpgradeCooldown || 0)}</p>
+              <p className="text-gray-300 text-sm">Upgrade your farm capacity once per cooldown period. Daily upgrade limit: 1</p>
+              
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5">
               <div className="text-sm font-medium mb-1">Capacity & Stamina</div>
               <p className="text-gray-300 text-sm">Each chicken requires stamina capacity. You must have available power ≥ stamina to purchase.</p>
-              {playerFarm && (
-                <p className="text-gray-400 text-xs mt-1">Available power: {Number(playerFarm.totalProductionPower - playerFarm.currProductionPower)} | Max chickens: {playerFarm.maxChickens} | Owned: {playerFarm.currChickens}</p>
-              )}
+              
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5">
               <div className="text-sm font-medium mb-1">Claims</div>
@@ -223,6 +212,21 @@ export default function HowToPlay() {
               <div className="text-sm font-medium">Watch Announcements</div>
               <p className="text-gray-300 text-sm mt-2">Check in-game announcements for events and bonus windows.</p>
             </div>
+          </div>
+        </section>
+
+        {/* Referrals */}
+        <section className="mb-12">
+          <h2 className="text-lg font-semibold mb-3">Referrals</h2>
+          <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-gray-300">
+            <p className="text-sm">
+              Earn <span className="font-semibold text-white">2.5%</span> for each referral. When a player joins using your
+              link and makes purchases, you receive a <span className="font-semibold text-white">2.5% bonus</span>.
+              Grow your referrals to increase your total earnings over time.
+            </p>
+            <p className="text-sm mt-2 text-gray-400">
+              Find and copy your referral link from the in-game menu: <span className="text-white/90">Menu &gt; Referrals</span>.
+            </p>
           </div>
         </section>
 
