@@ -1,5 +1,6 @@
 "use client";
 import { FunctionUI } from "@/components/admin/FunctionUI";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { chickenFarmContract } from "@/contracts";
 
 export default function ReadFunctionsPage() {
@@ -10,16 +11,17 @@ export default function ReadFunctionsPage() {
     );
 
     return (
-        <div className="space-y-6">
-            {readFunctions.map((func: any) => (
-                <FunctionUI
-                    key={func.name}
-                    func={func}
-                    contractConfig={chickenFarmContract}
-                    type="read"
-                />
-            ))}
-        </div>
+        <AdminLayout>
+            <div className="space-y-6">
+                {readFunctions.map((func: any) => (
+                    <FunctionUI
+                        key={func.name}
+                        func={func}
+                        contractConfig={chickenFarmContract}
+                        type="read"
+                    />
+                ))}
+            </div>
+        </AdminLayout>
     );
 }
-

@@ -1,5 +1,6 @@
 "use client";
 import { FunctionUI } from "@/components/admin/FunctionUI";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import { chickenFarmContract } from "@/contracts";
 
 // Sadece owner'ın çağırabildiği fonksiyonları filtrelemek için liste
@@ -33,16 +34,17 @@ export default function UserFunctionsPage() {
     );
 
     return (
-        <div className="space-y-6">
-            {userWriteFunctions.map((func: any) => (
-                <FunctionUI
-                    key={func.name}
-                    func={func}
-                    contractConfig={chickenFarmContract}
-                    type="write"
-                />
-            ))}
-        </div>
+        <AdminLayout>
+            <div className="space-y-6">
+                {userWriteFunctions.map((func: any) => (
+                    <FunctionUI
+                        key={func.name}
+                        func={func}
+                        contractConfig={chickenFarmContract}
+                        type="write"
+                    />
+                ))}
+            </div>
+        </AdminLayout>
     );
 }
-

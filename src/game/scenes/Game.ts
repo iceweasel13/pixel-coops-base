@@ -1,6 +1,10 @@
 import { EventBus } from '../EventBus';
 import { Scene, Math as PhaserMath } from 'phaser';
 
+type VolumeControllableSound = Phaser.Sound.BaseSound & {
+    setVolume(value: number): Phaser.Sound.BaseSound;
+};
+
 /**
  * Ana oyun sahnesi.
  * Oyuncunun haritada hareket ettiği, etkileşimde bulunduğu ve oyunun temel mantığının işlediği yerdir.
@@ -38,7 +42,7 @@ export class Game extends Scene {
     private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
     // Audio: background music control
-    private backgroundMusic: Phaser.Sound.BaseSound | null = null;
+    private backgroundMusic: VolumeControllableSound | null = null;
     private onToggleSound = (enabled: boolean) => {
         if (!this.backgroundMusic) return;
         if (enabled) {
@@ -93,7 +97,7 @@ export class Game extends Scene {
                     if (enabled !== null) vol = enabled === 'true' ? defaultVolume : 0;
                 }
             }
-            this.backgroundMusic = this.sound.add('game_music', { loop: true, volume: vol });
+            this.backgroundMusic = this.sound.add('game_music', { loop: true, volume: vol }) as VolumeControllableSound;
             if (vol > 0) this.backgroundMusic.play();
         } catch {}
 

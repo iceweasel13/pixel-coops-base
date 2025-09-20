@@ -38,7 +38,7 @@ export function SettingsPanel() {
                     <div className="text-sm text-gray-400">Volume: {volume}%</div>
                 </div>
                 <div className="w-56 max-w-[60%]">
-                    <Slider value={[volume]} onValueChange={(v) => setVolume(v[0] ?? 0)} max={100} step={1} />
+                    <Slider value={[volume]} onValueChange={(v: number[]) => setVolume(v[0] ?? 0)} max={100} step={1} />
                 </div>
             </div>
         </div>
