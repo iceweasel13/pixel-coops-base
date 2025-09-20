@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+"use client";
+
 import {
     Dialog,
     DialogContent,
@@ -9,8 +10,12 @@ import {
 import { SettingsPanel } from "@/components/panels/SettingsPanel";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import { signOut } from "next-auth/react";
-import { Copy, LogOut, ExternalLink } from "lucide-react";
+import { Copy, LogOut, ExternalLink, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useGame } from "@/context/GameContext"; // Context'i import et
+import { formatEther } from "viem";
+
 type MenuItem = "settings" | "how-to-play" | "trade" | "profile" | "referrals";
 
 export type MenuDialogProps = {
@@ -20,14 +25,19 @@ export type MenuDialogProps = {
 
 function WalletArea() {
     const { address } = useAccount();
-    const { data: balance, isLoading } = useBalance({ address });
+    const { data: ethBalance, isLoading: isEthLoading } = useBalance({
+        address,
+    });
+    const { playerData, isLoading: isGameLoading } = useGame(); // Context'ten veri al
     const [copied, setCopied] = useState(false);
 
     const shortenAddress = (addr: string | undefined) => {
         if (!addr) return "";
         const start = 12;
         const end = 12;
-        return `${addr.substring(0, start)}...${addr.substring(addr.length - end)}`;
+        return `${addr.substring(0, start)}...${addr.substring(
+            addr.length - end
+        )}`;
     };
 
     const handleCopy = async () => {
@@ -66,15 +76,21 @@ function WalletArea() {
                     <div className="bg-black/30 rounded-md px-3 py-2">
                         <div className="text-gray-400 text-xs">ETH Balance</div>
                         <div className="text-white font-semibold text-sm mt-1">
-                            {isLoading
+                            {isEthLoading
                                 ? "Loading..."
-                                : `${parseFloat(balance?.formatted || "0").toFixed(5)} ${balance?.symbol || "ETH"}`}
+                                : `${parseFloat(
+                                      ethBalance?.formatted || "0"
+                                  ).toFixed(5)} ${ethBalance?.symbol || "ETH"}`}
                         </div>
                     </div>
                     <div className="bg-black/30 rounded-md px-3 py-2">
                         <div className="text-gray-400 text-xs">EGG Balance</div>
                         <div className="text-white font-semibold text-sm mt-1">
-                            {`0.0000000000 EGG`}
+                            {isGameLoading
+                                ? "Loading..."
+                                : `${parseFloat(
+                                      formatEther(playerData.eggTokenBalance)
+                                  ).toFixed(4)} EGG`}
                         </div>
                     </div>
                 </div>
@@ -83,27 +99,110 @@ function WalletArea() {
     );
 }
 
+function ReferralsPanel({ onClose }: { onClose: () => void }) {
+    const { address } = useAccount();
+    const { playerData, isLoading } = useGame(); // Context'ten veri al
+    const [copied, setCopied] = useState(false);
+
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+    const referralUrl = `${baseUrl}?ref=${address ?? ""}`;
+
+    const copyReferral = async () => {
+        try {
+            await navigator.clipboard.writeText(referralUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1200);
+        } catch (_) {
+            // noop
+        }
+    };
+
+    return (
+        <div className="w-full text-white p-6 max-w-2xl">
+            <h2 className="text-2xl font-bold mb-1">Refer a Friend</h2>
+            <p className="text-gray-300 mb-5">
+                Share your referral link with friends and earn 2.5% of the $EGG
+                coins they earn!
+            </p>
+
+            {isLoading ? (
+                <div className="flex justify-center items-center h-24">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                        <div className="bg-black/50 rounded-lg p-4">
+                            <div className="text-gray-400 text-xs">
+                                Total Referrals
+                            </div>
+                            <div className="text-white text-xl font-bold mt-1">
+                                {playerData.totalReferrals}
+                            </div>
+                        </div>
+                        <div className="bg-black/50 rounded-lg p-4">
+                            <div className="text-gray-400 text-xs">
+                                Total EGG Earned
+                            </div>
+                            <div className="text-white text-xl font-bold mt-1">
+                                {parseFloat(
+                                    formatEther(playerData.totalReferralBonus)
+                                ).toFixed(4)}{" "}
+                                $EGG
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-black/50 rounded-lg p-4">
+                        <h3 className="font-semibold mb-2">
+                            Your Referral Link
+                        </h3>
+                        <div className="flex items-center gap-2">
+                            <input
+                                readOnly
+                                value={referralUrl}
+                                className="flex-1 bg-black/40 text-gray-200 px-3 py-2 rounded border border-gray-700 focus:outline-none"
+                            />
+                            <button
+                                onClick={copyReferral}
+                                className="inline-flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold px-3 py-2 rounded-md"
+                            >
+                                <Copy className="w-4 h-4" />
+                                {copied ? "Copied" : "Copy"}
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            <div className="mt-6 flex items-center justify-end">
+                <button
+                    onClick={onClose}
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// BU KISIMLAR DEĞİŞMEDİ
 export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
     const [selectedMenu, setSelectedMenu] = useState<MenuItem>("profile");
-
     useEffect(() => {
         if (open) {
             setSelectedMenu("profile");
         }
     }, [open]);
-
     const renderPanel = () => {
         switch (selectedMenu) {
             case "settings":
                 return <SettingsPanel />;
             case "profile":
-                return (
-                    <ProfilePanel onClose={() => onOpenChange(false)} />
-                );
+                return <ProfilePanel onClose={() => onOpenChange(false)} />;
             case "referrals":
-                return (
-                    <ReferralsPanel onClose={() => onOpenChange(false)} />
-                );
+                return <ReferralsPanel onClose={() => onOpenChange(false)} />;
             case "how-to-play":
                 return (
                     <div className="text-center text-white p-8">
@@ -124,15 +223,11 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                 return null;
         }
     };
-
     const getMenuClass = (menu: MenuItem) => {
         const baseClass = "cursor-pointer transition-colors duration-300";
-        if (selectedMenu === menu) {
-            return `${baseClass} text-[#a4e24d]`;
-        }
+        if (selectedMenu === menu) return `${baseClass} text-[#a4e24d]`;
         return `${baseClass} text-gray-300 hover:text-white`;
     };
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
@@ -151,7 +246,6 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                         height={40}
                     />
                 </DialogClose>
-
                 <div className="flex flex-col md:flex-row h-full min-h-[420px]">
                     <div className="md:w-1/3 bg-black/80 flex flex-col items-center justify-center p-6 gap-6 text-center">
                         <button
@@ -211,7 +305,6 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                             </span>
                         </a>
                     </div>
-
                     <div className="md:w-2/3 bg-black/70 flex flex-col items-center justify-start p-6 gap-6">
                         {renderPanel()}
                     </div>
@@ -223,25 +316,21 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
 
 function ProfilePanel({ onClose }: { onClose: () => void }) {
     const { disconnect } = useDisconnect();
-
     const handleLogout = async () => {
         try {
             disconnect();
             await signOut({ redirect: false });
         } catch (_) {
-            // noop
+            /* noop */
         }
     };
-
     return (
         <div className="w-full text-white p-6 max-w-2xl">
             <h2 className="text-2xl font-bold mb-1">Account</h2>
             <p className="text-gray-300 mb-5">
                 Your account information and balances
             </p>
-
             <WalletArea />
-
             <div className="mt-6 flex items-center justify-end gap-3">
                 <button
                     onClick={onClose}
@@ -255,76 +344,6 @@ function ProfilePanel({ onClose }: { onClose: () => void }) {
                 >
                     <LogOut className="w-4 h-4" />
                     Logout
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function ReferralsPanel({ onClose }: { onClose: () => void }) {
-    const { address } = useAccount();
-    const [copied, setCopied] = useState(false);
-
-    const baseUrl =
-        process.env.NEXTAUTH_URL ||
-        (typeof window !== "undefined" ? window.location.origin : "");
-    const referralUrl = `${baseUrl}?ref=${address ?? ""}`;
-
-    const copyReferral = async () => {
-        try {
-            await navigator.clipboard.writeText(referralUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1200);
-        } catch (_) {
-            // noop
-        }
-    };
-
-    return (
-        <div className="w-full text-white p-6 max-w-2xl">
-            <h2 className="text-2xl font-bold mb-1">Refer a Friend</h2>
-            <p className="text-gray-300 mb-5">
-                Share your referral link with friends and earn a 2.5% $EGG coin
-                they earn!
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                <div className="bg-black/50 rounded-lg p-4">
-                    <div className="text-gray-400 text-xs">Total Referrals</div>
-                    <div className="text-white text-xl font-bold mt-1">0</div>
-                </div>
-                <div className="bg-black/50 rounded-lg p-4">
-                    <div className="text-gray-400 text-xs">Total EGG Earned</div>
-                    <div className="text-white text-xl font-bold mt-1">
-                        0.00 $EGG
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-black/50 rounded-lg p-4">
-                <h3 className="font-semibold mb-2">Your Referral Link</h3>
-                <div className="flex items-center gap-2">
-                    <input
-                        readOnly
-                        value={referralUrl}
-                        className="flex-1 bg-black/40 text-gray-200 px-3 py-2 rounded border border-gray-700 focus:outline-none"
-                    />
-                    <button
-                        onClick={copyReferral}
-                        className="inline-flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold px-3 py-2 rounded-md"
-                    >
-                        <Copy className="w-4 h-4" />
-                        {copied ? "Copied" : "Copy"}
-                    </button>
-                </div>
-            </div>
-
-            <div className="mt-6 flex items-center justify-end">
-                <button
-                    onClick={onClose}
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold"
-                >
-                    Close
                 </button>
             </div>
         </div>
