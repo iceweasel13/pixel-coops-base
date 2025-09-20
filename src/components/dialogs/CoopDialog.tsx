@@ -14,9 +14,10 @@ import { Input } from "../ui/input";
 import { Loader2, ArrowRight, ChevronsUp, Zap, Clock, ShieldCheck } from "lucide-react";
 import { parseEther } from "viem";
 import { chickenDataMap } from "@/data/chickens"; // Yeni veri dosyamızı import ediyoruz
+import { farmUpgrades } from "@/data/upgrades";
 
 // ... (farmUpgrades, formatTime, UpgradeTimer bileşenleri aynı kalıyor) ...
-const farmUpgrades = [{ level: 2, maxChickens: 3, totalProductionPower: 300, cost: 150, x: 1, y: 3 }, { level: 3, maxChickens: 4, totalProductionPower: 520, cost: 350, x: 1, y: 4 }, { level: 4, maxChickens: 5, totalProductionPower: 820, cost: 700, x: 1, y: 5 }, { level: 5, maxChickens: 6, totalProductionPower: 1250, cost: 1300, x: 1, y: 6 }, { level: 6, maxChickens: 7, totalProductionPower: 1850, cost: 2400, x: 1, y: 7 }, { level: 7, maxChickens: 8, totalProductionPower: 2750, cost: 4500, x: 1, y: 8 }, { level: 8, maxChickens: 9, totalProductionPower: 4050, cost: 8000, x: 1, y: 9 }, { level: 9, maxChickens: 10, totalProductionPower: 6050, cost: 15000, x: 1, y: 10 },];
+// moved to src/data/upgrades.ts
 const formatTime = (seconds: number): string => { if (seconds <= 0) return "Ready!"; const h = Math.floor(seconds / 3600).toString().padStart(2, '0'); const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0'); const s = Math.floor(seconds % 60).toString().padStart(2, '0'); return `${h}:${m}:${s}`; };
 const UpgradeTimer = ({ initialSeconds }: { initialSeconds: number }) => { const [seconds, setSeconds] = useState(initialSeconds); useEffect(() => { setSeconds(initialSeconds); const interval = setInterval(() => { setSeconds(prev => (prev > 0 ? prev - 1 : 0)); }, 1000); return () => clearInterval(interval); }, [initialSeconds]); return <span className="font-mono">{formatTime(seconds)}</span>; };
 

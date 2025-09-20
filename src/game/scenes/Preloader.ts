@@ -11,17 +11,23 @@ export class Preloader extends Scene
 
     init ()
     {
-        this.add.image(512, 384, 'background');
-        this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
-        const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
-        this.load.on('progress', (progress: number) => {
-            bar.width = 4 + (460 * progress);
-        });
+        // Loading UI handled by Boot via a full-screen HTML overlay.
+        // Keep Preloader lightweight.
     }
 
     preload ()
     {
         this.load.setPath('assets');
+        // Update DOM loading bar created in Boot
+        this.load.on('progress', (progress: number) => {
+            try {
+                const fill = document.getElementById('loading-bar-fill') as HTMLDivElement | null;
+                if (fill) {
+                    const pct = Math.max(0, Math.min(100, Math.floor(progress * 100)));
+                    fill.style.width = pct + '%';
+                }
+            } catch {}
+        });
         
         // Önceki karakteri kaldırıp yenisini ekliyoruz
         // ÖNEMLİ: Eski player_sheet satırını sildiğinden emin ol.
@@ -49,6 +55,13 @@ export class Preloader extends Scene
 
     create ()
     {
+        // Remove loading overlay once assets are ready
+        try {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay && overlay.parentElement) {
+                overlay.parentElement.removeChild(overlay);
+            }
+        } catch {}
         this.scene.start('Game');
     }
 }
