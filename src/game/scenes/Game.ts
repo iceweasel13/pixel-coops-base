@@ -37,6 +37,32 @@ export class Game extends Scene {
     private triggers: { name: 'shop' | 'coop' | 'collect' | 'announcements'; rect: Phaser.Geom.Rectangle; inside: boolean }[] = [];
     private lastDirection: 'up' | 'down' | 'left' | 'right' = 'down';
 
+    // Audio: background music control
+    private backgroundMusic: Phaser.Sound.BaseSound | null = null;
+    private onToggleSound = (enabled: boolean) => {
+        if (!this.backgroundMusic) return;
+        if (enabled) {
+            if (!this.backgroundMusic.isPlaying) {
+                this.backgroundMusic.play({ loop: true });
+            }
+        } else {
+            if (this.backgroundMusic.isPlaying) {
+                this.backgroundMusic.stop();
+            }
+        }
+    };
+    private onSetVolume = (value: number) => {
+        // value is 0..1
+        const vol = Math.max(0, Math.min(1, value));
+        if (!this.backgroundMusic) return;
+        this.backgroundMusic.setVolume(vol);
+        if (vol === 0) {
+            if (this.backgroundMusic.isPlaying) this.backgroundMusic.stop();
+        } else if (!this.backgroundMusic.isPlaying) {
+            this.backgroundMusic.play({ loop: true });
+        }
+    };
+
     constructor() {
         super('Game');
     }
@@ -52,6 +78,39 @@ export class Game extends Scene {
             this.renderChickens(chickenIndices);
         });
         this.setupInputControls(); // Klavye ve dokunmatik kontrolleri birleştirdik
+
+        // Background music: play on loop with saved volume
+        try {
+            const defaultVolume = 0.6;
+            let vol = defaultVolume;
+            if (typeof window !== 'undefined') {
+                const savedVol = window.localStorage.getItem('soundVolume');
+                if (savedVol !== null) {
+                    const v = parseInt(savedVol);
+                    if (!Number.isNaN(v)) vol = Math.max(0, Math.min(100, v)) / 100;
+                } else {
+                    const enabled = window.localStorage.getItem('soundEnabled');
+                    if (enabled !== null) vol = enabled === 'true' ? defaultVolume : 0;
+                }
+            }
+            this.backgroundMusic = this.sound.add('game_music', { loop: true, volume: vol });
+            if (vol > 0) this.backgroundMusic.play();
+        } catch {}
+
+        // Listen to settings toggle from React UI
+        EventBus.on('toggle-sound', this.onToggleSound);
+        EventBus.on('set-sound-volume', this.onSetVolume);
+
+        // Cleanup on shutdown
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            EventBus.removeListener('toggle-sound', this.onToggleSound);
+            EventBus.removeListener('set-sound-volume', this.onSetVolume);
+            if (this.backgroundMusic) {
+                this.backgroundMusic.stop();
+                this.backgroundMusic.destroy();
+                this.backgroundMusic = null;
+            }
+        });
 
         EventBus.emit('current-scene-ready', this);
     }

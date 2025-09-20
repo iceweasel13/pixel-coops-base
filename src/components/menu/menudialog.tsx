@@ -33,8 +33,8 @@ function WalletArea() {
 
     const shortenAddress = (addr: string | undefined) => {
         if (!addr) return "";
-        const start = 12;
-        const end = 12;
+        const start = 6;
+        const end = 6;
         return `${addr.substring(0, start)}...${addr.substring(
             addr.length - end
         )}`;

@@ -51,6 +51,9 @@ export class Preloader extends Scene
         for (let i = 1; i <= 10; i++) {
             this.load.image(`chicken_${i}` as const, `sittingChicken/chicken${i}.png`);
         }
+
+        // Arka plan müziği
+        this.load.audio('game_music', 'musics/game_music.ogg');
     }
 
     create ()

@@ -19,11 +19,13 @@ export const authenticationAdapter = createAuthenticationAdapter({
   },
 
   createMessage: ({ nonce, address, chainId }) => {
+    const domain = typeof window !== 'undefined' ? window.location.host : 'localhost';
+    const uri = typeof window !== 'undefined' ? window.location.origin : 'http://localhost';
     return createSiweMessage({
-      domain: window.location.host,
+      domain,
       address,
       statement: "Welcome to the Monplace app",
-      uri: window.location.origin,
+      uri,
       version: "1",
       chainId,
       nonce,
