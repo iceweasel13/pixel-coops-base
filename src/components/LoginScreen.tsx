@@ -5,6 +5,7 @@ import Image from "next/image";
 import { StartPanel } from "./panels/StartPanel";
 import { SettingsPanel } from "./panels/SettingsPanel";
 import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 interface LoginScreenProps {
     onGameStart: () => void;
@@ -92,7 +93,7 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                             >
                                 SETTINGS
                             </button>
-                            <a
+                            <Link
                                 href="/how-to-play"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -104,8 +105,8 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                                     HOW TO PLAY
                                     <ExternalLink className="w-5 h-5" />
                                 </span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 href="/trade"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -117,8 +118,8 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                                     TRADE $EGG
                                     <ExternalLink className="w-5 h-5" />
                                 </span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 href="https://twitter.com/yourprofile"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -134,7 +135,7 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                                 >
                                     <path d="M2 3h5.2l5.37 7.36L18.6 3H22l-7.33 9.92L22 21h-5.2l-5.66-7.77L5.4 21H2l7.58-10.24L2 3z" />
                                 </svg>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

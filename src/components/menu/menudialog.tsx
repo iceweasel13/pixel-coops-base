@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext"; // Context'i import et
 import { formatEther } from "viem";
+import Link from "next/link";
 
 type MenuItem = "settings" | "how-to-play" | "trade" | "profile" | "referrals";
 
@@ -278,7 +279,7 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                         >
                             SETTINGS
                         </button>
-                        <a
+                        <Link
                             href="/how-to-play"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -290,8 +291,8 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                                 HOW TO PLAY
                                 <ExternalLink className="w-4 h-4" />
                             </span>
-                        </a>
-                        <a
+                        </Link>
+                        <Link
                             href="/trade"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -303,7 +304,7 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                                 TRADE $EGG
                                 <ExternalLink className="w-4 h-4" />
                             </span>
-                        </a>
+                        </Link>
                     </div>
                     <div className="md:w-2/3 bg-black/70 flex flex-col items-center justify-start p-6 gap-6">
                         {renderPanel()}

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { starterChickenData, purchasableChickens } from '@/data/chickens'
 import { farmUpgrades } from '@/data/upgrades'
 import { useMemo } from 'react'
+import Link from 'next/link'
 
 export default function HowToPlay() {
 
@@ -261,7 +262,7 @@ export default function HowToPlay() {
         <footer className="text-gray-400 text-sm py-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
             <span>Need help? Reach out via in-game announcements or socials.</span>
-            <a href="/" className="text-[#a4e24d] hover:underline">Back to Home</a>
+            <Link href="/" className="text-[#a4e24d] hover:underline">Back to Home</Link>
           </div>
         </footer>
       </main>
