@@ -4,8 +4,17 @@ import { starterChickenData, purchasableChickens } from '@/data/chickens'
 import { farmUpgrades } from '@/data/upgrades'
 import { useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useGame } from '@/context/GameContext'
 
 export default function HowToPlay() {
+  const router = useRouter();
+  const { referralAddress } = useGame();
+  const backHref = useMemo(() => {
+    const refFromQuery = (router?.query?.ref as string) || '';
+    const ref = (refFromQuery || referralAddress || '').trim();
+    return ref ? `/?ref=${encodeURIComponent(ref)}` : '/';
+  }, [router?.query?.ref, referralAddress]);
 
   const chickens = useMemo(() => [starterChickenData, ...purchasableChickens], []);
 
@@ -20,7 +29,7 @@ export default function HowToPlay() {
 
       <header className="border-b border-white/10 bg-black/60 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 py-6 flex items-center gap-3">
-          <Image src="/logo.png" alt="Logo" width={36} height={36} className="rounded-sm" />
+          <Image src="/logo.png" alt="Logo" width={72} height={72} className="rounded-sm" />
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">How to Play</h1>
             <p className="text-sm text-gray-300">Quick start guide, core mechanics, and useful tips</p>
@@ -262,7 +271,7 @@ export default function HowToPlay() {
         <footer className="text-gray-400 text-sm py-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
             <span>Need help? Reach out via in-game announcements or socials.</span>
-            <Link href="/" className="text-[#a4e24d] hover:underline">Back to Home</Link>
+            <Link href={backHref} className="text-[#a4e24d] hover:underline">Back to Home</Link>
           </div>
         </footer>
       </main>
