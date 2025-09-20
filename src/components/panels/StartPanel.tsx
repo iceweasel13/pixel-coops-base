@@ -14,7 +14,7 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
     });
     const { status } = useSession();
 
-    const isAuthenticated = status === 'authenticated';
+    const isAuthenticated = status === "authenticated";
     const canStartGame = isConnected && isAuthenticated;
 
     const shortenAddress = (addr: string | undefined) => {
@@ -22,7 +22,7 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
         return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
     };
 
-    const buttonClassName = `w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-[clamp(0.9rem,4vw,1.25rem)] transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed`;
+    const buttonClassName = `w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-sm sm:text-base md:text-lg lg:text-xl transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed`;
 
     return (
         <div className="w-full max-w-md mx-auto text-white p-8 font-mono">
@@ -30,15 +30,22 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
                 <div>
                     <div className="mb-2">
                         <span className="text-gray-400">WALLET ADDRESS: </span>
-                        <span className="text-white font-bold">{shortenAddress(address)}</span>
+                        <span className="text-white font-bold">
+                            {shortenAddress(address)}
+                        </span>
                     </div>
                     <div>
                         <span className="text-gray-400">WALLET BALANCE: </span>
                         {isLoading ? (
-                            <span className="text-white font-bold">Loading...</span>
+                            <span className="text-white font-bold">
+                                Loading...
+                            </span>
                         ) : (
                             <span className="text-white font-bold">
-                                {parseFloat(balance?.formatted || "0").toFixed(4)} {balance?.symbol}
+                                {parseFloat(balance?.formatted || "0").toFixed(
+                                    4
+                                )}{" "}
+                                {balance?.symbol}
                             </span>
                         )}
                     </div>
@@ -56,28 +63,34 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
                         authenticationStatus,
                         mounted,
                     }) => {
-                        const ready = mounted && authenticationStatus !== 'loading';
+                        const ready =
+                            mounted && authenticationStatus !== "loading";
                         const connected =
                             ready &&
                             account &&
                             chain &&
-                            (!authenticationStatus || authenticationStatus === 'authenticated');
+                            (!authenticationStatus ||
+                                authenticationStatus === "authenticated");
 
                         return (
                             <div
                                 {...(!ready && {
-                                    'aria-hidden': true,
+                                    "aria-hidden": true,
                                     style: {
                                         opacity: 0,
-                                        pointerEvents: 'none',
-                                        userSelect: 'none',
+                                        pointerEvents: "none",
+                                        userSelect: "none",
                                     },
                                 })}
                             >
                                 {(() => {
                                     if (!connected) {
                                         return (
-                                            <button onClick={openConnectModal} type="button" className={buttonClassName}>
+                                            <button
+                                                onClick={openConnectModal}
+                                                type="button"
+                                                className={buttonClassName}
+                                            >
                                                 CONNECT WALLET
                                             </button>
                                         );
@@ -85,14 +98,22 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
 
                                     if (chain.unsupported) {
                                         return (
-                                            <button onClick={openChainModal} type="button" className={buttonClassName}>
+                                            <button
+                                                onClick={openChainModal}
+                                                type="button"
+                                                className={buttonClassName}
+                                            >
                                                 WRONG NETWORK
                                             </button>
                                         );
                                     }
 
                                     return (
-                                        <button onClick={openAccountModal} type="button" className={buttonClassName}>
+                                        <button
+                                            onClick={openAccountModal}
+                                            type="button"
+                                            className={buttonClassName}
+                                        >
                                             {account.displayName}
                                         </button>
                                     );
@@ -104,13 +125,14 @@ export function StartPanel({ onGameStart }: StartPanelProps) {
                 <button
                     onClick={onGameStart}
                     disabled={!canStartGame}
-                    className="w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-[clamp(0.9rem,4vw,1.25rem)] transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    className="w-full bg-[#a4e24d] text-black font-bold py-3 px-8 rounded-lg text-sm sm:text-base md:text-lg lg:text-xl transition-all hover:bg-opacity-90 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                     START GAME
                 </button>
                 {isConnected && !isAuthenticated && (
                     <p className="text-sm text-orange-300 text-center">
-                        Please sign the message in your wallet to finish logging in.
+                        Please sign the message in your wallet to finish logging
+                        in.
                     </p>
                 )}
             </div>

@@ -4,6 +4,7 @@ import { useAccount, useBalance } from 'wagmi';
 import { BalanceDisplay } from '../BalanceDisplay';
 import { useGame } from '@/context/GameContext'; // CONTEXT'İ İMPORT ET
 import { formatEther } from 'viem';
+import { formatEggBalance } from '@/lib/format';
 
 export function Balances() {
   const { address, isConnected } = useAccount();
@@ -20,6 +21,7 @@ export function Balances() {
 
 
   const formattedEggBalance = formatEther(playerData.eggTokenBalance);
+  const eggDisplay = formatEggBalance(formattedEggBalance);
 
   return (
     <div className="absolute top-2 left-0 right-4 z-10 flex justify-between items-start pointer-events-none">
@@ -33,7 +35,9 @@ export function Balances() {
         <BalanceDisplay
           icon="/icons/egg.png"
           name={'EGG'}
+          display={eggDisplay}
           amount={formattedEggBalance}
+          tooltip={formattedEggBalance}
           isLoading={isLoading} // Context'in yüklenme durumunu kullan
         />
       </div>
