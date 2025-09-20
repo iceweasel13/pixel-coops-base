@@ -15,6 +15,5 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-// We are completely removing MyApp.getInitialProps.
 
 export default MyApp;

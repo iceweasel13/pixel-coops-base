@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
     Dialog,
@@ -158,16 +158,14 @@ function ReferralsPanel({ onClose }: { onClose: () => void }) {
                         <h3 className="font-semibold mb-2">
                             Your Referral Link
                         </h3>
-                        <div className="flex items-center gap-2">
+                        <div className="flex gap-2 items-stretch sm:items-center">
                             <input
                                 readOnly
                                 value={referralUrl}
-                                className="flex-1 bg-black/40 text-gray-200 px-3 py-2 rounded border border-gray-700 focus:outline-none"
-                            />
+                               className="flex-1 basis-0 min-w-0 max-w-[65%] sm:max-w-none bg-black/40 text-gray-200 px-3 py-2 rounded border border-gray-700 focus:outline-none"  />
                             <button
                                 onClick={copyReferral}
-                                className="inline-flex items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold px-3 py-2 rounded-md"
-                            >
+                             className="inline-flex shrink-0 items-center gap-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold px-3 py-2 rounded-md"   >
                                 <Copy className="w-4 h-4" />
                                 {copied ? "Copied" : "Copy"}
                             </button>
@@ -176,19 +174,12 @@ function ReferralsPanel({ onClose }: { onClose: () => void }) {
                 </>
             )}
 
-            <div className="mt-6 flex items-center justify-end">
-                <button
-                    onClick={onClose}
-                    className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold"
-                >
-                    Close
-                </button>
-            </div>
+            
         </div>
     );
 }
 
-// BU KISIMLAR DEĞİŞMEDİ
+// BU KISIMLAR DEÄÄ°ÅMEDÄ°
 export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
     const [selectedMenu, setSelectedMenu] = useState<MenuItem>("profile");
     useEffect(() => {
@@ -233,81 +224,83 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 showCloseButton={false}
-                className="bg-black/30 border-none p-0 sm:max-w-4xl max-h-[calc(100vh-2rem)] overflow-y-auto"
+                className="bg-black/30 border-none p-0 w-full max-w-[min(100vw-1rem,64rem)] sm:max-w-4xl max-h-[calc(100vh-2rem)] overflow-y-auto overflow-x-hidden"
             >
-                <DialogClose
-                    aria-label="Close"
-                    className="absolute right-3 top-3 size-10"
-                >
-                    <Image
-                        src="/icons/close.png"
-                        alt="Close"
-                        className="h-10 w-10"
-                        width={40}
-                        height={40}
-                    />
-                </DialogClose>
-                <div className="flex flex-col md:flex-row h-full min-h-[420px]">
-                    <div className="md:w-1/3 bg-black/80 flex flex-col items-center justify-center p-6 gap-6 text-center">
-                        <button
-                            onClick={() => onOpenChange(false)}
-                            className="inline-flex items-center justify-center px-5 py-3 rounded-lg bg-[#a4e24d] text-black font-bold text-sm sm:text-base md:text-lg lg:text-xl hover:bg-[#93cf3f] transition-colors shadow"
-                        >
-                            RETURN TO GAME
-                        </button>
-                        <button
-                            onClick={() => setSelectedMenu("profile")}
-                            className={`${getMenuClass(
-                                "profile"
-                            )} font-bold text-sm sm:text-base md:text-lg lg:text-xl`}
-                        >
-                            PROFILE
-                        </button>
-                        <button
-                            onClick={() => setSelectedMenu("referrals")}
-                            className={`${getMenuClass(
-                                "referrals"
-                            )} font-bold text-sm sm:text-base md:text-lg lg:text-xl`}
-                        >
-                            REFERRALS
-                        </button>
-                        <button
-                            onClick={() => setSelectedMenu("settings")}
-                            className={`${getMenuClass(
-                                "settings"
-                            )} font-bold text-sm sm:text-base md:text-lg lg:text-xl`}
-                        >
-                            SETTINGS
-                        </button>
-                        <Link
-                            href="/how-to-play"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`${getMenuClass(
-                                "how-to-play"
-                            )} font-bold text-sm sm:text-base md:text-lg lg:text-xl`}
-                        >
-                            <span className="inline-flex items-center gap-2">
-                                HOW TO PLAY
-                                <ExternalLink className="w-4 h-4" />
-                            </span>
-                        </Link>
-                        <Link
-                            href="/trade"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`${getMenuClass(
-                                "trade"
-                            )} font-bold text-sm sm:text-base md:text-lg lg:text-xl`}
-                        >
-                            <span className="inline-flex items-center gap-2">
-                                TRADE $EGG
-                                <ExternalLink className="w-4 h-4" />
-                            </span>
-                        </Link>
-                    </div>
-                    <div className="md:w-2/3 bg-black/70 flex flex-col items-center justify-start p-6 gap-6">
-                        {renderPanel()}
+                <div className="relative w-full rounded-lg bg-black/70 px-4 pb-4 pt-12 sm:p-6 overflow-hidden">
+                    <DialogClose
+                        aria-label="Close"
+                        className="absolute right-2 top-2 size-8 sm:right-3 sm:top-3 sm:size-10"
+                    >
+                        <Image
+                            src="/icons/close.png"
+                            alt="Close"
+                            className="h-8 w-8 sm:h-10 sm:w-10"
+                            width={40}
+                            height={40}
+                        />
+                    </DialogClose>
+                    <div className="flex h-full min-h-[420px] w-full flex-col md:flex-row">
+                        <div className="w-full md:w-1/3 bg-black/80 flex flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-6 gap-4 sm:gap-6 text-center">
+                            <button
+                                onClick={() => onOpenChange(false)}
+                                className="flex w-full items-center justify-center rounded-lg bg-[#a4e24d] px-4 py-2 text-xs font-bold uppercase tracking-wide text-black shadow transition-colors hover:bg-[#93cf3f] sm:text-sm md:text-base lg:text-lg"
+                            >
+                                RETURN TO GAME
+                            </button>
+                            <button
+                                onClick={() => setSelectedMenu("profile")}
+                                className={`${getMenuClass(
+                                    "profile"
+                                )} block w-full text-center font-bold text-xs sm:text-sm md:text-base lg:text-lg`}
+                            >
+                                PROFILE
+                            </button>
+                            <button
+                                onClick={() => setSelectedMenu("referrals")}
+                                className={`${getMenuClass(
+                                    "referrals"
+                                )} block w-full text-center font-bold text-xs sm:text-sm md:text-base lg:text-lg`}
+                            >
+                                REFERRALS
+                            </button>
+                            <button
+                                onClick={() => setSelectedMenu("settings")}
+                                className={`${getMenuClass(
+                                    "settings"
+                                )} block w-full text-center font-bold text-xs sm:text-sm md:text-base lg:text-lg`}
+                            >
+                                SETTINGS
+                            </button>
+                            <Link
+                                href="/how-to-play"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`${getMenuClass(
+                                    "how-to-play"
+                                )} block w-full text-center font-bold text-xs sm:text-sm md:text-base lg:text-lg`}
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    HOW TO PLAY
+                                    <ExternalLink className="w-4 h-4" />
+                                </span>
+                            </Link>
+                            <Link
+                                href="/trade"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`${getMenuClass(
+                                    "trade"
+                                )} block w-full text-center font-bold text-xs sm:text-sm md:text-base lg:text-lg`}
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    TRADE $EGG
+                                    <ExternalLink className="w-4 h-4" />
+                                </span>
+                            </Link>
+                        </div>
+                        <div className="w-full md:w-2/3 bg-transparent flex flex-col items-center justify-start gap-6 px-4 py-6 sm:p-6">
+                            {renderPanel()}
+                        </div>
                     </div>
                 </div>
             </DialogContent>
@@ -350,3 +343,4 @@ function ProfilePanel({ onClose }: { onClose: () => void }) {
         </div>
     );
 }
+

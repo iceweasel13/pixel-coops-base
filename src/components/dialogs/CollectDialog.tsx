@@ -67,7 +67,7 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
             <div className="text-center">
               <p className="text-lg">Accumulated Amount:</p>
               <p className="text-5xl font-bold font-mono tracking-tighter">
-                {parseFloat(formattedRewards).toFixed(6)}
+                {parseFloat(formattedRewards).toFixed(2)}
               </p>
               <p className="text-lg">$EGG</p>
             </div>

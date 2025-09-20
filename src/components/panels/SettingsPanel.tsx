@@ -30,15 +30,19 @@ export function SettingsPanel() {
     }, [volume]);
 
     return (
-        <div className="text-center text-white p-8">
-            <h2 className="text-3xl font-bold mb-6 text-[#a4e24d]">SETTINGS</h2>
-            <div className="bg-black/30 p-6 rounded-lg flex items-center justify-between max-w-sm mx-auto">
-                <div className="flex-1 mr-4 text-left">
-                    <div className="text-xl text-gray-300">Sound</div>
-                    <div className="text-sm text-gray-400">Volume: {volume}%</div>
+        <div className="text-center text-white px-4 py-6 sm:p-8">
+            <div className="mx-auto flex max-w-sm flex-col items-stretch justify-between gap-4 rounded-lg bg-black/30 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
+                <div className="flex-1 text-left">
+                    <div className="text-lg text-gray-300 sm:text-xl">Sound</div>
+                    <div className="text-xs text-gray-400 sm:text-sm">Volume: {volume}%</div>
                 </div>
-                <div className="w-56 max-w-[60%]">
-                    <Slider value={[volume]} onValueChange={(v: number[]) => setVolume(v[0] ?? 0)} max={100} step={1} />
+                <div className="w-full sm:w-56 sm:max-w-[60%]">
+                    <Slider
+                        value={[volume]}
+                        onValueChange={(v: number[]) => setVolume(v[0] ?? 0)}
+                        max={100}
+                        step={1}
+                    />
                 </div>
             </div>
         </div>

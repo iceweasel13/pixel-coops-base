@@ -53,7 +53,7 @@ const UpgradeTimer = ({ initialSeconds }: { initialSeconds: number }) => {
         }, 1000);
         return () => clearInterval(interval);
     }, [initialSeconds]);
-    return <span className="font-mono">{formatTime(seconds)}</span>;
+    return <span className="font-mono bg-[#b66e65]  p-2 rounded font-bold text-stone-100">{formatTime(seconds)}</span>;
 };
 
 export function CoopDialog({
@@ -256,7 +256,7 @@ export function CoopDialog({
                                             <ChevronsUp size={18} /> New Slot
                                             Capacity:
                                         </span>
-                                        <span className="font-bold">
+                                        <span className="bg-[#b66e65] p-2 rounded font-bold w-12 flex items-center justify-center text-stone-100">
                                             {nextUpgrade.maxChickens}
                                         </span>
                                     </div>
@@ -265,7 +265,7 @@ export function CoopDialog({
                                             <Zap size={18} /> Total Power
                                             Capacity:
                                         </span>
-                                        <span className="font-bold">
+                                        <span className=" bg-[#b66e65] p-2 rounded font-bold w-12 flex items-center justify-center text-stone-100">
                                             {nextUpgrade.totalProductionPower}
                                         </span>
                                     </div>
