@@ -107,7 +107,7 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                                 </span>
                             </Link>
                             <Link
-                                href="/trade"
+                                href={`https://app.uniswap.org/swap?inputCurrency=${process.env.NEXT_PUBLIC_EGG_TOKEN_CONTRACT}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={`${getMenuClass(
@@ -120,7 +120,7 @@ export function LoginScreen({ onGameStart }: LoginScreenProps) {
                                 </span>
                             </Link>
                             <Link
-                                href="https://twitter.com/yourprofile"
+                                href="https://twitter.com/pixelcoops"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center justify-center w-10 h-10 rounded-sm bg-black text-gray-400 hover:text-white border border-gray-700 transition-colors"

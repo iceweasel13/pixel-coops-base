@@ -19,10 +19,10 @@ export class Game extends Scene {
     // Chickens
     private chickenSprites: Phaser.GameObjects.Image[] = [];
     private chickenTilePositions: { x: number; y: number }[] = [
-        { x: 40, y: 31 }, { x: 41, y: 31 }, { x: 42, y: 31 },
-        { x: 47, y: 31 }, { x: 48, y: 31 }, { x: 49, y: 31 },
-        { x: 40, y: 38 }, { x: 41, y: 38 }, { x: 42, y: 38 },
-        { x: 47, y: 38 }
+        { x: 17, y: 27 }, { x: 18, y: 27 }, { x: 19, y: 27 },
+        { x: 24, y: 27 }, { x: 25, y: 27 }, { x: 26, y: 27 },
+        { x: 17, y: 34 }, { x: 18, y: 34 }, { x: 19, y: 34 },
+        { x: 20, y: 34 }
     ];
 
     // Harita Katmanları
@@ -139,6 +139,7 @@ export class Game extends Scene {
             this.map.addTilesetImage('Nature_Tileset', 'Nature_Tileset'),
             this.map.addTilesetImage('Tileset_Floor_Detail', 'Tileset_Floor_Detail'),
             this.map.addTilesetImage('UI_Tileset', 'UI_Tileset'),
+            this.map.addTilesetImage('city', 'city'),
             this.map.addTilesetImage('farm_buildings_all_assets', 'farm_buildings_all_assets')
         ].filter(tileset => tileset !== null) as Phaser.Tilemaps.Tileset[];
 

@@ -6,11 +6,11 @@
 
 "use client";
 
-import Image from "next/image";
+
 import { Coins, Zap, Shield, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
+import  Image  from "next/image";
 /**
  * Defines the structure for the properties (props) that the ChickenCard component accepts.
  */
@@ -52,7 +52,7 @@ export function ChickenCard({
 
   // Dynamically set card classes based on its state. Unbuyable cards are faded.
   const cardClasses = cn(
-    "w-[250px] h-[400px] flex flex-col rounded-lg border border-[#b66e65] shadow-sm transition-transform text-stone-100",
+    "w-[250px] h-[380px] flex flex-col rounded-lg border border-[#b66e65] shadow-sm transition-transform text-stone-100",
     !isBuyable && !isFreebie && "opacity-60"
   );
 
@@ -102,20 +102,17 @@ export function ChickenCard({
                 <Zap className="h-4 w-4 text-yellow-400" />
                 <span>Power: {chicken.power}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-                <Shield className="h-4 w-4 text-blue-400" />
-                <span>Stamina Req: {chicken.stamina}</span>
-            </div>
+         
         </div>
         
-        {/* This div pushes the purchase section to the bottom of the card. */}
-        <div className="flex-grow"></div>
+      
         
         {/* Purchase section with cost and action button. */}
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center gap-2">
-            <Coins className="h-5 w-5 text-yellow-400" />
-            <span className="text-xl font-bold">{isFreebie ? '0' : chicken.cost}</span>
+           
+            <Image src={'./icons/egg.png'} height={20} width={20} alt={'coin'} />
+            <span className="text-xl font-bold">{isFreebie ? '0' : `${chicken.cost} $Egg`}</span>
           </div>
           {renderButton()}
         </div>

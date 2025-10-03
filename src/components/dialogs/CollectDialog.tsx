@@ -54,7 +54,7 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
         <DialogHeader className="text-center space-y-4">
           <DialogTitle className="text-4xl">Collect Rewards</DialogTitle>
           <DialogDescription>
-            Withdraw your accumulated $EGG tokens to your wallet.
+       <span className="text-[#5a4535]">Withdraw your accumulated $EGG tokens to your wallet.</span> 
           </DialogDescription>
         </DialogHeader>
 
@@ -65,8 +65,8 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
             <Loader2 className="h-12 w-12 animate-spin" />
           ) : (
             <div className="text-center">
-              <p className="text-lg">Accumulated Amount:</p>
-              <p className="text-5xl font-bold font-mono tracking-tighter">
+              <p className="text-lg font-semibold">Accumulated Amount:</p>
+              <p className="text-5xl font-bold font-mono tracking-tighter text-gray-200">
                 {parseFloat(formattedRewards).toFixed(2)}
               </p>
               <p className="text-lg">$EGG</p>

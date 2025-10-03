@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { IRefPhaserGame, PhaserGame } from './PhaserGame';
 import { EventBus } from './game/EventBus';
@@ -6,7 +6,7 @@ import { ShopDialog } from './components/dialogs/ShopDialog';
 import { CoopDialog } from './components/dialogs/CoopDialog';
 import { CollectDialog } from './components/dialogs/CollectDialog';
 import { GameUI } from './components/GameUI';
-import { Toaster } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 import { AnnouncementDialog } from './components/dialogs/AnnouncementsDialog';
 import { useGame } from '@/context/GameContext';
 
@@ -89,9 +89,9 @@ export default function App() {
             case 'coop':
                 return 'Coop';
             case 'collect':
-                return 'Collect';
+                return 'Dealer';
             case 'announcements':
-                return 'Announcements';
+                return 'Mail Box';
             default:
                 return '';
         }
@@ -116,8 +116,9 @@ export default function App() {
                         }}
                         className="pointer-events-auto select-none rounded-md bg-black/70 px-4 py-2 text-white shadow-lg ring-1 ring-white/20 hover:bg-black/80 focus:outline-hidden focus:ring-2 focus:ring-[#a4e24d] cursor-pointer"
                     >
-                        <span className="font-medium">{labelFor(pendingDialogType)}</span>
-                        <span className="mx-2">area reached.</span>
+                        <span className="mx-1 ">Welcome</span>
+                        <span className="font-medium mr-2">{labelFor(pendingDialogType)}</span>
+                        
                         <span className="text-white/80">Click to open or press Enter.</span>
                     </div>
                 </div>
@@ -131,3 +132,4 @@ export default function App() {
         </div>
     );
 }
+

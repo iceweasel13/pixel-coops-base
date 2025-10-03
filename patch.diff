@@ -1,0 +1,6 @@
+﻿*** Begin Patch
+*** Update File: src/App.tsx
+@@
+-import { Toaster } from 'sonner';
++import { Toaster } from './components/ui/sonner';
+*** End Patch

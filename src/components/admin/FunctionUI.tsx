@@ -1,4 +1,4 @@
-// src/components/admin/FunctionUI.tsx
+﻿// src/components/admin/FunctionUI.tsx
 
 "use client";
 
@@ -39,15 +39,15 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
         const value = inputs[name];
 
         if (value === undefined || value === '') {
-            toast.error(`Please fill the '${name}' field.`);
+            toast.error(`Please fill in the '${name}' field.`);
             return null;
         }
 
-        // Parametre tipine ve adına göre özel dönüşüm
+        // Parametre tipine ve adÄ±na gÃ¶re Ã¶zel dÃ¶nÃ¼ÅŸÃ¼m
         switch (inputDef.type) {
             case 'address':
                 if (!isAddress(value)) {
-                    toast.error(`Invalid address: enter a valid address for '${name}'.`);
+                    toast.error(`Please enter a valid address for '${name}'.`);
                     return null;
                 }
                 finalArgs.push(value);
@@ -55,7 +55,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
             
             case 'bool':
                 if (value.toLowerCase() !== 'true' && value.toLowerCase() !== 'false') {
-                    toast.error(`Invalid value: enter 'true' or 'false' for '${name}'.`);
+                    toast.error(`Invalid value. Enter 'true' or 'false' for '${name}'.`);
                     return null;
                 }
                 finalArgs.push(value.toLowerCase() === 'true');
@@ -71,7 +71,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
                         finalArgs.push(BigInt(value));
                     }
                 } catch {
-                    toast.error(`Invalid number: enter a valid numeric value for '${name}'.`);
+                    toast.error(`Invalid number. Enter a valid numeric value for '${name}'.`);
                     return null;
                 }
                 break;
@@ -89,7 +89,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
     if (preparedArgs === null && func.inputs.length > 0) return;
 
     if (!publicClient) {
-      toast.error('Blockchain client is not ready yet.');
+      toast.error('Blockchain client is not ready.');
       return;
     }
 
@@ -109,7 +109,7 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
         toast.success(`"${func.name}" read successfully!`);
     } catch (err: any) {
         setResult(`Error: ${err.message}`);
-        toast.error(`Read error: ${err.shortMessage || err.message}`);
+        toast.error(`Read failed: ${err.shortMessage || err.message}`);
     } finally {
         setIsLoading(false);
     }
@@ -128,8 +128,8 @@ export function FunctionUI({ func, contractConfig, type }: FunctionUIProps) {
         args: preparedArgs as any,
         value: valueToSend
     }, {
-        onSuccess: (hash) => toast.success(`Transaction submitted successfully! Hash: ${hash}`),
-        onError: (error) => toast.error(`Hata: ${ error.message}`),
+        onSuccess: (hash) => toast.success(`Transaction submitted successfully. Hash: ${hash}`),
+        onError: (error) => toast.error(`Error: ${ error.message}`),
     });
   };
 

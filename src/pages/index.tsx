@@ -25,7 +25,7 @@ export default function Home() {
           name="description"
           content="A Web3 game built with Phaser and Next.js"
         />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="/icon.ico" />
       </Head>
       <main>
         {isGameStarted ? (

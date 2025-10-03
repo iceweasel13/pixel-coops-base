@@ -181,6 +181,7 @@ function ReferralsPanel({ onClose }: { onClose: () => void }) {
 
 // BU KISIMLAR DEÄÄ°ÅMEDÄ°
 export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
+    
     const [selectedMenu, setSelectedMenu] = useState<MenuItem>("profile");
     useEffect(() => {
         if (open) {
@@ -285,7 +286,7 @@ export function MenuDialog({ open, onOpenChange }: MenuDialogProps) {
                                 </span>
                             </Link>
                             <Link
-                                href="/trade"
+                                href={`https://app.uniswap.org/swap?inputCurrency=${process.env.NEXT_PUBLIC_EGG_TOKEN_CONTRACT}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={`${getMenuClass(
@@ -343,4 +344,3 @@ function ProfilePanel({ onClose }: { onClose: () => void }) {
         </div>
     );
 }
-

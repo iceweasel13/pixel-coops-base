@@ -46,7 +46,7 @@ export class Preloader extends Scene
         this.load.image('Nature_Tileset', 'Nature_Tileset.png');
         this.load.image('Tileset_Floor_Detail', 'Tileset_Floor_Detail.png');
         this.load.image('UI_Tileset', 'UI_Tileset.png');
-
+        this.load.image('city',"city.png")
         // Tavuk görselleri (1..10)
         for (let i = 1; i <= 10; i++) {
             this.load.image(`chicken_${i}` as const, `sittingChicken/chicken${i}.png`);

@@ -88,7 +88,7 @@ export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <DialogHeader className="flex flex-col gap-2 mb-4">
           <DialogTitle className="text-4xl text-[#5a4535] text-center">Marketplace</DialogTitle>
           <DialogDescription>
-            <span className="inline-flex bg-[#b66e65] p-2 text-stone-100 rounded-md font-bold">
+            <span className="inline-flex bg-[#b66e65] p-2 text-stone-100 rounded-md font-bold ml-3.5">
               {canGetFreeChicken ? "Claim your free starter chicken to begin!" : `Available Power: ${availablePower}`}
             </span>
           </DialogDescription>

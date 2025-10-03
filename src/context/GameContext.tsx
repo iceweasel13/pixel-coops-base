@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
     createContext,
@@ -18,7 +18,7 @@ import { config } from "@/config";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-// Types GÜNCELLENDİ
+// Types GÃœNCELLENDÄ°
 export interface IPlayerFarm {
     farmIndex: number;
     maxChickens: number;
@@ -34,8 +34,8 @@ interface IPlayerData {
     farmUpgradeCooldown: number;
     eggTokenBalance: bigint;
     eggTokenAllowance: bigint;
-    totalReferrals: number; // YENİ EKLENDİ
-    totalReferralBonus: bigint; // YENİ EKLENDİ
+    totalReferrals: number; // YENÄ° EKLENDÄ°
+    totalReferralBonus: bigint; // YENÄ° EKLENDÄ°
 }
 interface IGameContext {
     playerFarm: IPlayerFarm | null;
@@ -77,7 +77,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    // useReadContracts GÜNCELLENDİ: Referans fonksiyonları eklendi
+    // useReadContracts GÃœNCELLENDÄ°: Referans fonksiyonlarÄ± eklendi
     const {
         data: contractData,
         isLoading: isLoadingReads,
@@ -127,7 +127,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 functionName: "allowance",
                 args: [address!, chickenFarmContract.address],
             },
-            // --- YENİ EKLENEN OKUMALAR ---
+            // --- YENÄ° EKLENEN OKUMALAR ---
             {
                 abi: chickenFarmContract.abi as Abi,
                 address: chickenFarmContract.address,
@@ -149,7 +149,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
 
     const [playerFarm, setPlayerFarm] = useState<IPlayerFarm | null>(null);
-    // Başlangıç state'i GÜNCELLENDİ
+    // BaÅŸlangÄ±Ã§ state'i GÃœNCELLENDÄ°
     const [playerData, setPlayerData] = useState<IPlayerData>({
         hasFreeChicken: false,
         pendingRewards: BigInt(0),
@@ -165,7 +165,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         if (isConnected) refetch();
     }, [isConnected, refetch]);
 
-    // Veri işleme useEffect'i GÜNCELLENDİ
+    // Veri iÅŸleme useEffect'i GÃœNCELLENDÄ°
     useEffect(() => {
         if (contractData) {
             const [
@@ -202,7 +202,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 farmUpgradeCooldown: Number(farmUpgradeCooldown as bigint) || 0,
                 eggTokenBalance: (eggBalance as bigint) || BigInt(0),
                 eggTokenAllowance: (eggAllowance as bigint) || BigInt(0),
-                // YENİ VERİLERİ STATE'E EKLE
+                // YENÄ° VERÄ°LERÄ° STATE'E EKLE
                 totalReferrals: (referrals as any[])?.length || 0,
                 totalReferralBonus: (referralBonus as bigint) || BigInt(0),
             });
@@ -210,7 +210,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [contractData]);
 
-    // handleTransaction ve diğer fonksiyonlar aynı kalıyor...
+    // handleTransaction ve diÄŸer fonksiyonlar aynÄ± kalÄ±yor...
     const { writeContractAsync } = useWriteContract();
     type BaseWriteParams = Parameters<typeof writeContractAsync>[0];
     type WriteParams = Omit<BaseWriteParams, "value"> & { value?: bigint };
@@ -235,19 +235,19 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         try {
             setIsConfirming(true);
             toastId = toast.loading(
-                "Please confirm the transaction in your wallet..."
+                "Please approve the transaction in your wallet."
             );
             const hash = await writeContractAsync(params as BaseWriteParams);
             toast.loading("Confirming transaction...", { id: toastId });
             await waitForTransactionReceipt(config, { hash, confirmations: 1 });
-            toast.success("Transaction successful! Updating data.", {
+            toast.success("Transaction confirmed. Refreshing data...", {
                 id: toastId,
                 duration: 3000,
             });
             await refetch();
         } catch (error: any) {
             if (isUserRejection(error)) {
-                toast.info("İşlem iptal edildi.", {
+                toast.info("Transaction canceled by user.", {
                     id: toastId,
                     duration: 2500,
                 });
@@ -300,7 +300,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 functionName: "getFreeStarterChicken",
                 args: [slot.x, slot.y],
             });
-        else toast.error("No empty space in your farm!");
+        else toast.error("No available space in your farm.");
     };
     const buyChicken = (chickenIndex: number) => {
         const slot = findNextAvailableSlot();
@@ -311,7 +311,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 functionName: "buyChicken",
                 args: [chickenIndex, slot.x, slot.y],
             });
-        else toast.error("No empty space in your farm!");
+        else toast.error("No available space in your farm.");
     };
     const buyNewFarm = () =>
         handleTransaction({
@@ -357,3 +357,5 @@ export const useGame = () => {
         throw new Error("useGame must be used within a GameProvider");
     return context;
 };
+
+

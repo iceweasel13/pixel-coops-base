@@ -24,7 +24,7 @@ export const authenticationAdapter = createAuthenticationAdapter({
     return createSiweMessage({
       domain,
       address,
-      statement: "Welcome to the Monplace app",
+      statement: "Welcome to the Pixel Coops Game",
       uri,
       version: "1",
       chainId,

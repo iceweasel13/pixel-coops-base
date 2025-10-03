@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { CoopSlot } from "@/types";
 import { Lock, Plus, ShoppingCart, Trash2 } from "lucide-react";
@@ -20,7 +20,7 @@ export function CoopSlotCard({ slot }: Props) {
   const handleSell = () => {
     toast.promise(new Promise(resolve => setTimeout(resolve, 1500)), {
         loading: `Selling ${slot.chicken?.name}...`,
-        success: `${slot.chicken?.name} sold successfully!`,
+        success: ` Successfully sold ${slot.chicken?.name}!`,
         error: "An error occurred during the sale."
     });
   }
@@ -62,3 +62,4 @@ export function CoopSlotCard({ slot }: Props) {
 
   return null;
 }
+
