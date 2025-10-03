@@ -26,11 +26,9 @@ import {
     ShieldCheck,
 } from "lucide-react";
 import { parseEther } from "viem";
-import { chickenDataMap } from "@/data/chickens"; // Yeni veri dosyamızı import ediyoruz
-import { farmUpgrades } from "@/data/upgrades";
+import { getChickenDataMap } from "@/data/chickens"; // Veri çekme fonksiyonunu import et
+import { fetchFarmUpgrades, FarmUpgrade } from "@/data/upgrades"; // Veri çekme fonksiyonunu ve tipi import et
 
-// ... (farmUpgrades, formatTime, UpgradeTimer bileşenleri aynı kalıyor) ...
-// moved to src/data/upgrades.ts
 const formatTime = (seconds: number): string => {
     if (seconds <= 0) return "Ready!";
     const h = Math.floor(seconds / 3600)
@@ -68,14 +66,40 @@ export function CoopDialog({
         playerFarm,
         playerChickens,
         isLoading,
-        referralAddress,
         purchaseInitialFarm,
         buyNewFarm,
         approveEggTokens,
         isConfirming,
     } = useGame();
 
-    if (isLoading || !playerFarm) {
+    // --- VERİTABANI ENTEGRASYONU İÇİN STATE'LER ---
+    const [chickenDataMap, setChickenDataMap] = useState(new Map());
+    const [farmUpgrades, setFarmUpgrades] = useState<FarmUpgrade[]>([]);
+    const [isDataLoading, setIsDataLoading] = useState(true);
+
+    useEffect(() => {
+        if (isOpen) {
+            const loadData = async () => {
+                setIsDataLoading(true);
+                try {
+                    const [chickenMap, upgrades] = await Promise.all([
+                        getChickenDataMap(),
+                        fetchFarmUpgrades(),
+                    ]);
+                    setChickenDataMap(chickenMap);
+                    setFarmUpgrades(upgrades);
+                } catch (error) {
+                    console.error("Failed to load game data:", error);
+                } finally {
+                    setIsDataLoading(false);
+                }
+            };
+            loadData();
+        }
+    }, [isOpen]);
+
+
+    if (isLoading || !playerFarm || isDataLoading) {
         return (
             <Dialog open={isOpen} onOpenChange={onClose}>
                 <DialogContent
@@ -120,25 +144,20 @@ export function CoopDialog({
     const totalSlots = playerFarm.maxChickens;
     const occupiedSlotsCount = playerChickens.length;
 
-    // --- ANA DEĞİŞİKLİK BURADA ---
     const coopSlots = Array.from({ length: 10 }).map((_, index) => {
         const id = index + 1;
         if (index < occupiedSlotsCount) {
-            // Kontrattan gelen tavuk verisi (dinamik)
             const ownedChicken = playerChickens[index];
-            const chickenIndex = Number(ownedChicken.chickenIndex); // Tavuğun tip ID'si
+            const chickenIndex = Number(ownedChicken.chickenIndex);
 
-            // Statik veri haritasından bu tipe ait bilgileri bul
             const templateData = chickenDataMap.get(chickenIndex) || {
-                name: "Bilinmeyen Tavuk",
+                name: "Unknown Chicken",
                 imageUrl: "/assets/chickens/chicken1.png",
             };
 
-            // Dinamik ve statik veriyi birleştirerek tam bir tavuk objesi oluştur
             const fullChickenData = {
                 ...templateData,
                 ...ownedChicken,
-                // Use sitting chicken sprites in My Coop view
                 imageUrl: `/assets/sittingChicken/chicken${chickenIndex}.png`,
             };
 
@@ -159,7 +178,7 @@ export function CoopDialog({
     );
 
     const renderUpgradeButton = () => {
-        /* Bu fonksiyon aynı kalıyor */ if (!nextUpgrade) return null;
+        if (!nextUpgrade) return null;
         const costInBigInt = parseEther(nextUpgrade.cost.toString());
         const hasEnoughBalance = playerData.eggTokenBalance >= costInBigInt;
         const hasEnoughAllowance = playerData.eggTokenAllowance >= costInBigInt;
@@ -301,4 +320,3 @@ export function CoopDialog({
         </Dialog>
     );
 }
-

@@ -1,25 +1,68 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { starterChickenData, purchasableChickens } from '@/data/chickens'
-import { farmUpgrades } from '@/data/upgrades'
+// Sadece GEREKLİ fonksiyonları import ediyoruz
+import { fetchPurchasableChickens } from '@/data/chickens'
+import { fetchFarmUpgrades, FarmUpgrade } from '@/data/upgrades'
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useGame } from '@/context/GameContext'
+import { GetStaticProps, InferGetStaticPropsType } from 'next'
 
-export default function HowToPlay() {
+// Tipleri tanımlıyoruz
+type Chicken = {
+    id: number;
+    name: string;
+    imageUrl: string;
+    power: number;
+    stamina: number;
+    cost: number;
+};
+
+// Sayfa derlenirken (build time) verileri çekmek için getStaticProps kullanıyoruz.
+export const getStaticProps: GetStaticProps<{
+  chickens: Chicken[];
+  farmUpgrades: FarmUpgrade[];
+}> = async () => {
+  // 1. Başlangıç tavuğunu manuel olarak tanımlıyoruz (ShopDialog'daki gibi)
+  const starterChickenData: Chicken = {
+      id: 1,
+      name: "Starter Chicken",
+      imageUrl: "/assets/chickens/chicken1.png",
+      power: 50,
+      stamina: 50,
+      cost: 0,
+  };
+
+  // 2. Satın alınabilir tavukları ve yükseltmeleri veritabanından çekiyoruz
+  const purchasableChickens = await fetchPurchasableChickens();
+  const farmUpgrades = await fetchFarmUpgrades();
+
+  // 3. İki tavuk listesini birleştiriyoruz
+  const allChickens = [starterChickenData, ...purchasableChickens];
+
+  return {
+    props: {
+      chickens: allChickens, // Birleştirilmiş tam listeyi prop olarak gönderiyoruz
+      farmUpgrades,
+    },
+    // Verileri saatte bir yeniden doğrula (isteğe bağlı)
+    revalidate: 3600,
+  };
+};
+
+
+export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
   const { referralAddress } = useGame();
+
   const backHref = useMemo(() => {
     const refFromQuery = (router?.query?.ref as string) || '';
     const ref = (refFromQuery || referralAddress || '').trim();
     return ref ? `/?ref=${encodeURIComponent(ref)}` : '/';
   }, [router?.query?.ref, referralAddress]);
 
-  const chickens = useMemo(() => [starterChickenData, ...purchasableChickens], []);
-
-  // Static guide content only; no live player data on this page.
-
+  // Sayfanın geri kalanı aynı, sadece veri kaynağı değişti.
   return (
     <div className="min-h-screen bg-black text-white">
       <Head>
@@ -49,7 +92,7 @@ export default function HowToPlay() {
           </div>
         </section>
 
-        {/* Quick Start Cards (docs-like) */}
+        {/* Quick Start Cards */}
         <section className="mb-12">
           <h2 className="text-lg font-semibold mb-4">Quick Start</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -65,7 +108,6 @@ export default function HowToPlay() {
                 <p className="text-gray-300 text-sm mt-1">Use the Start screen to connect with your wallet provider.</p>
               </div>
             </div>
-
             <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex gap-4">
               <div className="shrink-0">
                 <div className="size-12 rounded-lg bg-white/10 grid place-items-center">
@@ -78,7 +120,6 @@ export default function HowToPlay() {
                 <p className="text-gray-300 text-sm mt-1">Buy your first farm to begin production and unlock gameplay.</p>
               </div>
             </div>
-
             <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex gap-4">
               <div className="shrink-0">
                 <div className="size-12 rounded-lg bg-white/10 grid place-items-center">
@@ -91,7 +132,6 @@ export default function HowToPlay() {
                 <p className="text-gray-300 text-sm mt-1">Open the Collect menu to claim eggs generated over time.</p>
               </div>
             </div>
-
             <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex gap-4">
               <div className="shrink-0">
                 <div className="size-12 rounded-lg bg-white/10 grid place-items-center">
@@ -116,7 +156,7 @@ export default function HowToPlay() {
                 <tr className="text-left text-gray-300 bg-white/5">
                   <th className="px-4 py-3">Chicken</th>
                   <th className="px-4 py-3">Hashrate</th>
-                  <th className="px-4 py-3">Stamina Req</th>
+                  
                   <th className="px-4 py-3">Cost ($EGG)</th>
                 </tr>
               </thead>
@@ -130,9 +170,9 @@ export default function HowToPlay() {
                       </div>
                     </td>
                     <td className="px-4 py-3">{c.power}</td>
-                    <td className="px-4 py-3">{c.stamina}</td>
+                
                     <td className="px-4 py-3">{c.cost}</td>
-                </tr>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -167,8 +207,7 @@ export default function HowToPlay() {
           </div>
           <p className="text-xs text-gray-400 mt-2">Upgrades increase capacity and base hashrate. Limit: 1 upgrade per cooldown period.</p>
         </section>
-
-        {/* Limits & Rules */}
+   {/* Limits & Rules */}
         <section className="mb-12">
           <h2 className="text-lg font-semibold mb-4">Limits & Rules</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

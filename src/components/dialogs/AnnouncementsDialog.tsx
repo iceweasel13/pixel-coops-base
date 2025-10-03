@@ -1,12 +1,26 @@
+/**
+ * @file AnnouncementsDialog.tsx
+ * @description Renders a dialog to display announcements fetched from Supabase.
+ */
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabase"; // Supabase client'ı import et
+
+// Duyuru objesinin tipini tanımla
+type Announcement = {
+    id: string;
+    title: string;
+    content: string;
+    createdAt: string;
+};
+
 export function AnnouncementDialog({
   isOpen,
   onClose,
@@ -14,6 +28,31 @@ export function AnnouncementDialog({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  // State'leri tanımla
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Dialog açıldığında duyuruları çek
+  useEffect(() => {
+    if (isOpen) {
+      const fetchAnnouncements = async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('announcements')
+          .select('*')
+          .order('createdAt', { ascending: false }); // En yeni duyuruyu en üstte göster
+
+        if (error) {
+          console.error('Error fetching announcements:', error);
+        } else if (data) {
+          setAnnouncements(data);
+        }
+        setLoading(false);
+      };
+      fetchAnnouncements();
+    }
+  }, [isOpen]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
@@ -33,11 +72,27 @@ export function AnnouncementDialog({
           />
         </DialogClose>
         <DialogHeader>
-          <DialogTitle className="text-black/90">Announcements</DialogTitle>
-          <DialogDescription className="text-sm text-black/80">
-            this area will be build
-          </DialogDescription>
+          <DialogTitle className="text-black/90 text-2xl mb-2">Announcements</DialogTitle>
         </DialogHeader>
+        <div className="max-h-80 overflow-y-auto custom-scrollbar pr-2">
+          {loading ? (
+            <p className="text-black/80 text-center">Loading announcements...</p>
+          ) : announcements.length > 0 ? (
+            <div className="space-y-4">
+              {announcements.map((ann) => (
+                <div key={ann.id} className="p-4 bg-white/30 rounded-lg border border-white/40">
+                  <h3 className="font-bold text-lg text-[#5a4535]">{ann.title}</h3>
+                  <p className="text-sm text-black/80 mt-1">{ann.content}</p>
+                  <p className="text-xs text-black/60 text-right mt-2">
+                    {new Date(ann.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-black/80 text-center">No announcements yet.</p>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

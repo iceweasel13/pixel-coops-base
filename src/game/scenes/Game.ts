@@ -238,7 +238,7 @@ export class Game extends Scene {
      * Oyuncu hareketini aktif kontrole (dokunmatik veya klavye) göre yönetir.
      */
     private handleMovement() {
-        const speed = 240;
+        const speed = 120;
         const body = this.player.body as Phaser.Physics.Arcade.Body;
 
         // Dokunmatik kontrol aktifse, onu öncelikli kullan

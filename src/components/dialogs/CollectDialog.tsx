@@ -25,12 +25,22 @@ import Image from "next/image";
  */
 export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
   // Fetch necessary data and actions from the global GameContext.
-  const { playerData, claimRewards, isLoading, isConfirming } = useGame();
+  const { playerData, claimRewards, isLoading, isConfirming, totalHashPower, playerPower } = useGame();
 
   // Format the BigInt reward value into a human-readable string (e.g., "1.5").
   // $EGG token uses 18 decimals, so formatEther is the appropriate utility.
   const formattedRewards = playerData ? formatEther(playerData.pendingRewards) : "0";
   const hasRewards = playerData && playerData.pendingRewards > BigInt(0);
+
+  // Compute network share and daily farming based on production power
+  const totalHP = Number(totalHashPower || BigInt(0));
+  const userHP = Number(playerPower || BigInt(0));
+  const share = totalHP > 0 ? userHP / totalHP : 0;
+  const sharePercent = share * 100;
+  const formattedShare = `${sharePercent.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}%`;
+  const dailyEmission = 108000; // tokens per day
+  const dailyUser = dailyEmission * share;
+  const formattedDaily = dailyUser.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -58,18 +68,37 @@ export function CollectDialog({ isOpen, onClose }: { isOpen: boolean; onClose: (
           </DialogDescription>
         </DialogHeader>
 
-        {/* Rewards Display Section */}
-        <div className="my-8 flex flex-col items-center justify-center gap-4">
+        {/* Rewards + Stats Section */}
+        <div className="my-8 flex flex-col items-center justify-center gap-4 w-full">
           <Image src="/icons/egg.png" alt="$EGG Token" width={80} height={80} />
           {isLoading ? (
             <Loader2 className="h-12 w-12 animate-spin" />
           ) : (
-            <div className="text-center">
-              <p className="text-lg font-semibold">Accumulated Amount:</p>
-              <p className="text-5xl font-bold font-mono tracking-tighter text-gray-200">
-                {parseFloat(formattedRewards).toFixed(2)}
-              </p>
-              <p className="text-lg">$EGG</p>
+            <div className="w-full">
+              {/* Current Amount label left, amount centered */}
+              <div className="w-full">
+                <p className="text-lg font-semibold">Current Amount</p>
+              </div>
+              <div className="w-full flex items-center justify-center mt-1">
+                <div className="text-center">
+                  <p className="text-5xl font-bold font-mono tracking-tighter text-gray-200">
+                    {parseFloat(formattedRewards).toFixed(2)}
+                  </p>
+                  <p className="text-lg font-bold">$EGG</p>
+                </div>
+              </div>
+
+              {/* Network Share row */}
+              <div className="w-full mt-6 flex items-center justify-between">
+                <p className="text-lg font-semibold">Network Share</p>
+                <p className="text-lg font-semibold text-gray-200">{formattedShare}</p>
+              </div>
+
+              {/* Farming per day row */}
+              <div className="w-full mt-2 flex items-center justify-between">
+                <p className="text-lg font-semibold">Farming $EGG per day</p>
+                <p className="text-lg font-semibold text-gray-200">{formattedDaily}</p>
+              </div>
             </div>
           )}
         </div>

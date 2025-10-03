@@ -44,6 +44,8 @@ interface IGameContext {
     isLoading: boolean;
     isConfirming: boolean;
     referralAddress: string;
+    totalHashPower: bigint;
+    playerPower: bigint;
     purchaseInitialFarm: (referral?: string) => void;
     getFreeStarterChicken: () => void;
     buyChicken: (chickenIndex: number) => void;
@@ -59,6 +61,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     const { address, isConnected } = useAccount();
     const [isConfirming, setIsConfirming] = useState(false);
     const [referralAddress, setReferralAddress] = useState("");
+    const [totalHashPower, setTotalHashPower] = useState<bigint>(BigInt(0));
+    const [playerPower, setPlayerPower] = useState<bigint>(BigInt(0));
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -140,10 +144,22 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 functionName: "referralBonusPaid",
                 args: [address!],
             },
+            // Production power related reads
+            {
+                abi: chickenFarmContract.abi as Abi,
+                address: chickenFarmContract.address,
+                functionName: "totalHashPower",
+            },
+            {
+                abi: chickenFarmContract.abi as Abi,
+                address: chickenFarmContract.address,
+                functionName: "playerPower",
+                args: [address!],
+            },
         ],
         query: {
             enabled: isConnected && !!address,
-            refetchInterval: isConnected ? 5000 : false,
+            refetchInterval: isConnected ? 2500 : false,
             refetchOnWindowFocus: true,
         },
     });
@@ -178,6 +194,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 eggAllowance,
                 referrals,
                 referralBonus,
+                totalHashPowerRead,
+                playerPowerRead,
             ] = contractData.map((d) => d.result);
             if (
                 farmInfoResult &&
@@ -207,6 +225,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
                 totalReferralBonus: (referralBonus as bigint) || BigInt(0),
             });
             setPlayerChickens((ownedChickens as any[]) || []);
+            // Set production power values
+            setTotalHashPower((totalHashPowerRead as bigint) || BigInt(0));
+            setPlayerPower((playerPowerRead as bigint) || BigInt(0));
         }
     }, [contractData]);
 
@@ -335,6 +356,8 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         isLoading: isLoadingReads && isConnected,
         isConfirming,
         referralAddress,
+        totalHashPower,
+        playerPower,
         purchaseInitialFarm,
         getFreeStarterChicken,
         buyChicken,

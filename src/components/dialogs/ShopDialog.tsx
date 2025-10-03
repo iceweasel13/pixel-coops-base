@@ -5,48 +5,66 @@
  * and manages the UI for both free and paid acquisitions.
  */
 
+"use client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { ChickenCard } from "../ChickenCard";
 import { useGame } from "@/context/GameContext";
 import { Loader2 } from "lucide-react";
 import { parseEther } from "viem";
-import { starterChickenData, purchasableChickens } from "@/data/chickens";
+// `fetchPurchasableChickens` fonksiyonunu import ediyoruz
+import { fetchPurchasableChickens } from "@/data/chickens";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-/**
- * Static data definition for the special, one-time starter chicken.
- * This is kept separate from purchasable chickens to handle its unique logic.
- */
+
+// Chicken tipini tanımlıyoruz (veritabanından gelen veriye uygun olarak)
+type Chicken = {
+    id: number;
+    name: string;
+    imageUrl: string;
+    power: number;
+    stamina: number;
+    cost: number;
+};
 
 /**
- * An array of chicken objects available for purchase in the shop.
- * The 'id' here MUST match the 'chickenIndex' on the smart contract.
- * The first purchasable chicken added by the owner will have an index of 2.
+ * Başlangıç tavuğu manuel olarak burada tanımlanıyor, çünkü bu veri değişmiyor ve özel bir mantığı var.
  */
+const starterChickenData: Chicken = {
+    id: 1, // Bu, akıllı kontrattaki chickenIndex'dir
+    name: "Starter Chicken",
+    imageUrl: "/assets/chickens/chicken1.png",
+    power: 50,
+    stamina: 50,
+    cost: 0,
+};
 
-/**
- * Renders the Shop Dialog component.
- * It fetches game state from the GameContext to determine which chickens are available
- * and whether the player meets the requirements to purchase them.
- *
- * @param {object} props - The component's properties.
- * @param {boolean} props.isOpen - Controls the visibility of the dialog.
- * @param {() => void} props.onClose - Function to call when the dialog should be closed.
- * @returns {React.ReactElement} The rendered dialog component.
- */
+
 export function ShopDialog({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) {
   const { playerFarm, playerData, isLoading, isConfirming, getFreeStarterChicken, buyChicken, approveEggTokens } = useGame();
 
-  // Track which specific card initiated the current confirming action
-  // so only that card shows the loading state.
+  // Satın alınabilir tavukları ve veri yükleme durumunu tutmak için state'ler
+  const [purchasableChickens, setPurchasableChickens] = useState<Chicken[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [activeCardKey, setActiveCardKey] = useState<string | number | null>(null);
 
-  // Clear the active card when global confirming finishes.
+  useEffect(() => {
+    // Dialog açıldığında veritabanından satın alınabilir tavukları çekiyoruz
+    if (isOpen) {
+      const loadShopData = async () => {
+        setIsDataLoading(true);
+        const chickensFromDB = await fetchPurchasableChickens();
+        setPurchasableChickens(chickensFromDB);
+        setIsDataLoading(false);
+      };
+      loadShopData();
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isConfirming) setActiveCardKey(null);
   }, [isConfirming]);
 
-  if (isLoading || !playerFarm || !playerData) {
+  if (isLoading || !playerFarm || !playerData || isDataLoading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent showCloseButton={false} className="flex items-center justify-center bg-[#ecb17a] border-[#b66e65]">
