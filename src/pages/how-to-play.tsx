@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { ChevronsUp } from 'lucide-react'
 // Sadece GEREKLİ fonksiyonları import ediyoruz
 import { fetchPurchasableChickens } from '@/data/chickens'
 import { fetchFarmUpgrades, FarmUpgrade } from '@/data/upgrades'
@@ -55,6 +56,8 @@ export const getStaticProps: GetStaticProps<{
 export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
   const { referralAddress } = useGame();
+  const tokenAddress = process.env.NEXT_PUBLIC_EGG_TOKEN_CONTRACT;
+  const gameAddress = process.env.NEXT_PUBLIC_MAIN_CONTRACT;
 
   const backHref = useMemo(() => {
     const refFromQuery = (router?.query?.ref as string) || '';
@@ -92,6 +95,23 @@ export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticProp
           </div>
         </section>
 
+        {/* Token Info */}
+        <section className="mb-12">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold mb-3">Token Info</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-400">Contract Address</div>
+                <div className="font-mono break-all">{tokenAddress || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">Total Supply</div>
+                <div className="font-semibold">21,000,000</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Quick Start Cards */}
         <section className="mb-12">
           <h2 className="text-lg font-semibold mb-4">Quick Start</h2>
@@ -123,19 +143,19 @@ export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticProp
             <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex gap-4">
               <div className="shrink-0">
                 <div className="size-12 rounded-lg bg-white/10 grid place-items-center">
-                  <Image src="/assets/chickens/chicken3.png" alt="Collect" width={24} height={24} />
+                  <Image src="/assets/chickens/chicken3.png" alt="Dealer" width={24} height={24} />
                 </div>
               </div>
               <div>
                 <div className="text-xs uppercase tracking-wide text-gray-400">Step 3</div>
-                <div className="font-medium">Collect Eggs</div>
-                <p className="text-gray-300 text-sm mt-1">Open the Collect menu to claim eggs generated over time.</p>
+                <div className="font-medium">Dealer</div>
+                <p className="text-gray-300 text-sm mt-1">Open the "Dealer" to claim eggs generated over time.</p>
               </div>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5 flex gap-4">
               <div className="shrink-0">
                 <div className="size-12 rounded-lg bg-white/10 grid place-items-center">
-                  <Image src="/icons/egg.png" alt="Upgrade" width={24} height={24} />
+                  <ChevronsUp className="w-6 h-6 text-white/90" />
                 </div>
               </div>
               <div>
@@ -221,13 +241,12 @@ export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticProp
               
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-              <div className="text-sm font-medium mb-1">Capacity & Stamina</div>
-              <p className="text-gray-300 text-sm">Each chicken requires stamina capacity. You must have available power ≥ stamina to purchase.</p>
-              
+              <div className="text-sm font-medium mb-1">Power Capacity</div>
+              <p className="text-gray-300 text-sm">Each chicken consumes power capacity. Make sure you have enough available power capacity before purchasing.</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-5">
               <div className="text-sm font-medium mb-1">Claims</div>
-              <p className="text-gray-300 text-sm">Claim rewards anytime from the Collect menu. Unclaimed rewards accrue over time.</p>
+              <p className="text-gray-300 text-sm">Claim rewards anytime from the "Dealer". Unclaimed rewards accrue over time.</p>
             </div>
           </div>
         </section>
@@ -279,6 +298,76 @@ export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticProp
           </div>
         </section>
 
+        {/* Links & Contracts */}
+        <section className="mb-12">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold mb-3">Links</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-400">Pixel Coops</div>
+                <a
+                  href="https://www.pixelcoops.fun/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono break-all text-blue-400 underline"
+                >
+                  https://www.pixelcoops.fun/
+                </a>
+              </div>
+              <div>
+                <div className="text-gray-400">X</div>
+                <a
+                  href="https://x.com/PixelCoops"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono break-all text-blue-400 underline"
+                >
+                  https://x.com/PixelCoops
+                </a>
+              </div>
+              <div>
+                <div className="text-gray-400">Farcaster</div>
+                <a
+                  href="https://farcaster.xyz/pixelcoops"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono break-all text-blue-400 underline"
+                >
+                  https://farcaster.xyz/pixelcoops
+                </a>
+              </div>
+              <div>
+                <div className="text-gray-400">Farcaster Miniapp</div>
+                <a
+                  href="https://farcaster.xyz/miniapps/RkXJ6UyyfLpz/pixel-coops"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono break-all text-blue-400 underline"
+                >
+                  https://farcaster.xyz/miniapps/RkXJ6UyyfLpz/pixel-coops
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Game Contracts */}
+        <section className="mb-12">
+          <div className="rounded-xl border border-white/10 bg-white/5 p-6">
+            <h2 className="text-lg font-semibold mb-3">Game Contracts</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-400">Game Contract</div>
+                <div className="font-mono break-all">{gameAddress || '-'}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">$EGG Token</div>
+                <div className="font-mono break-all">{tokenAddress || '-'}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section className="mb-16">
           <h2 className="text-lg font-semibold mb-4">FAQ</h2>
@@ -295,7 +384,7 @@ export default function HowToPlay({ chickens, farmUpgrades }: InferGetStaticProp
                 <span className="font-medium">Where do I collect my eggs?</span>
                 <span className="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
               </summary>
-              <p className="text-gray-300 text-sm mt-2">Use the Collect menu in-game. You can claim periodically as production accrues.</p>
+              <p className="text-gray-300 text-sm mt-2">Use the "Dealer" in-game. You can claim periodically as production accrues.</p>
             </details>
             <details className="group rounded-xl border border-white/10 bg-white/5 p-4">
               <summary className="cursor-pointer list-none flex items-center justify-between">
